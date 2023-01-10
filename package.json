@@ -9,11 +9,16 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/noto-sans-kr": "^0.2.2",
+    "@react-native-masked-view/masked-view": "0.2.8",
     "@react-navigation/bottom-tabs": "^6.5.2",
     "@react-navigation/material-top-tabs": "^6.5.1",
     "@react-navigation/native": "~6.0.1",
+    "@react-navigation/stack": "^6.3.11",
     "eslint-config-universe": "^11.1.1",
     "expo": "~47.0.12",
+    "expo-dev-client": "~2.0.1",
+    "expo-font": "~11.0.1",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
     "react-dom": "18.1.0",
@@ -24,7 +29,7 @@
     "react-native-screens": "~3.18.0",
     "react-native-tab-view": "^3.3.4",
     "react-native-web": "~0.18.9",
-    "expo-dev-client": "~2.0.1"
+    "expo-app-loading": "~2.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
