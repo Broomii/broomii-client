@@ -1,13 +1,21 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, Pressable, TextStyle, ViewStyle } from "react-native"
+import React from "react"
+import styles from "./TextButton.styles"
 
-type Props = {}
+type Props = {
+  onPress: () => null
+  title: string
+  titleStyle?: TextStyle
+  containerStyle?: ViewStyle
+}
 
-const TextButton = (props: Props) => {
+const TextButton = ({ onPress, title, titleStyle, containerStyle }: Props) => {
   return (
-    <View>
-      <Text>TextButton</Text>
-    </View>
+    <Pressable
+      style={({ pressed }) => [containerStyle, pressed ? { opacity: 0.7 } : {}]}
+    >
+      <Text style={styles.textButtonTitle}>{title}</Text>
+    </Pressable>
   )
 }
 

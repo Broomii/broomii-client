@@ -1,9 +1,25 @@
-import { View, Text, Button as ButtonRN } from "react-native"
-import React from "react"
-import { ButtonProps } from "react-native"
+import { View, Text, Pressable, ViewStyle } from "react-native"
+import styles from "./Button.styles"
 
-const Button = ({ onPress, title }: ButtonProps) => {
-  return <ButtonRN title={title} onPress={onPress} />
+type Props = {
+  onPress: () => void
+  title: string
+  style?: ViewStyle
+}
+
+const Button = ({ onPress, title, style }: Props) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.buttonContainer,
+        style,
+        pressed ? { opacity: 0.9 } : {},
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.buttonTitle}>{title}</Text>
+    </Pressable>
+  )
 }
 
 export default Button
