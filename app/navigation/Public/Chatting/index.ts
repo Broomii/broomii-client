@@ -1,1 +1,1 @@
-export { default } from "./Chatting.navigator";
+export { default } from "./Chatting.navigator"

@@ -1,9 +1,8 @@
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet, Platform } from "react-native"
 
-import { Layout } from "../../constant";
+import { Layout } from "../../constant"
 
-const isAndroid: boolean = Platform.OS == "android" ? true : false;
-
+const isAndroid: boolean = Platform.OS == "android" ? true : false
 
 export default StyleSheet.create({
   containerNoPadding: {
@@ -16,4 +15,4 @@ export default StyleSheet.create({
   androidNavTitle: {
     paddingLeft: isAndroid ? 6 : 0,
   },
-});
+})

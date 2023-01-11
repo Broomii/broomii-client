@@ -3,8 +3,8 @@ import React from "react"
 import styles from "./FormInputLabel.styles"
 
 type Props = {
-  children: React.ReactNode,
-  style?: TextStyle,
+  children: React.ReactNode
+  style?: TextStyle
 }
 
 const FormInputLabel = ({ children, style }: Props) => {

@@ -1,1 +1,1 @@
-export { default } from "./Settings.navigator";
+export { default } from "./Settings.navigator"

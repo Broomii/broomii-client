@@ -3,7 +3,7 @@ import React from "react"
 import styles from "./TextButton.styles"
 
 type Props = {
-  onPress: () => null
+  onPress: () => void
   title: string
   titleStyle?: TextStyle
   containerStyle?: ViewStyle
@@ -12,6 +12,7 @@ type Props = {
 const TextButton = ({ onPress, title, titleStyle, containerStyle }: Props) => {
   return (
     <Pressable
+      onPress={onPress}
       style={({ pressed }) => [containerStyle, pressed ? { opacity: 0.7 } : {}]}
     >
       <Text style={styles.textButtonTitle}>{title}</Text>

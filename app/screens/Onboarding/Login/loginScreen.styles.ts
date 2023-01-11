@@ -1,12 +1,13 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from "react-native"
+import { Font } from "../../../style/font"
 
 export default StyleSheet.create({
-  contentContainer: {
+  loginScreenContainer: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 46
+    paddingHorizontal: 46,
   },
   logo: {
     width: 300,
@@ -28,6 +29,11 @@ export default StyleSheet.create({
     marginHorizontal: 20,
   },
   loginButton: {
-    marginVertical: 30,
+    marginVertical: 15,
+  },
+  spacer: {
+    height: Font.FontSize.Tertiary,
+    backgroundColor: "blue",
+    width: 20,
   },
 })

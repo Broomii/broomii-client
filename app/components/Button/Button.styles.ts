@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
-import colors from "../../style/colors";
-import { Font } from "../../style/font";
+import { StyleSheet } from "react-native"
+import colors from "../../style/colors"
+import { Font } from "../../style/font"
 
 export default StyleSheet.create({
   buttonContainer: {
@@ -11,7 +11,7 @@ export default StyleSheet.create({
     borderRadius: 15,
     width: "100%",
     height: 50,
-    
+
     backgroundColor: colors.brand,
   },
   buttonTitle: {
@@ -19,5 +19,5 @@ export default StyleSheet.create({
     fontSize: Font.FontSize.H3,
     fontFamily: Font.FontWeight.Medium,
     lineHeight: Font.FontSize.H3 + 10, // 없으면 다르게 보인다
-  }
+  },
 })

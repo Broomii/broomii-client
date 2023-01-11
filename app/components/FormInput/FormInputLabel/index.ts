@@ -1,3 +1,3 @@
-import FormInputLabel from "./FormInputLabel";
+import FormInputLabel from "./FormInputLabel"
 
 export default FormInputLabel

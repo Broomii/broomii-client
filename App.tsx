@@ -11,7 +11,7 @@ import {
   NotoSansKR_500Medium,
   NotoSansKR_700Bold,
   NotoSansKR_900Black,
-} from '@expo-google-fonts/noto-sans-kr';
+} from "@expo-google-fonts/noto-sans-kr"
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -21,20 +21,21 @@ export default function App() {
     NotoSansKR_500Medium,
     NotoSansKR_700Bold,
     NotoSansKR_900Black,
-  });
+  })
 
   if (!fontsLoaded) {
-    return <StatusBar />;
-  } else return (
-    <SafeAreaView style={styles.container}>
-      <Navigation />
-    </SafeAreaView>
-  )
+    return <StatusBar />
+  } else
+    return (
+      <SafeAreaView style={styles.container}>
+        <Navigation />
+      </SafeAreaView>
+    )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    fontFamily: "NotoSansKR_100Thin"
+    fontFamily: "NotoSansKR_100Thin",
   },
 })

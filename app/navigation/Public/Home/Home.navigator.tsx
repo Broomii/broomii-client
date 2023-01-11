@@ -19,7 +19,7 @@ const HomeNavigator = (props: Props) => {
           },
           tabBarActiveTintColor: "black",
           tabBarStyle: { width: "50%", elevation: 0 },
-          tabBarPressColor: "transparent"
+          tabBarPressColor: "transparent",
         }}
         sceneContainerStyle={{ backgroundColor: "white" }}
       >

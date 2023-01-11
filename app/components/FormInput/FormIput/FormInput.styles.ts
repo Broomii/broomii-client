@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import colors from "../../../style/colors";
+import { StyleSheet } from "react-native"
+import colors from "../../../style/colors"
 
 export default StyleSheet.create({
   formInputContainer: {
@@ -15,5 +15,5 @@ export default StyleSheet.create({
 
     height: 47,
     width: "100%",
-  }
+  },
 })
