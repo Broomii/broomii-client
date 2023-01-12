@@ -15,5 +15,8 @@ export default StyleSheet.create({
 
     height: 47,
     width: "auto",
+  },
+  formInputInnerContainer: {
+    height: 47
   }
 })

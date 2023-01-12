@@ -1,4 +1,6 @@
+import { forwardRef } from "react"
 import { View, Text, TextInput, ViewStyle } from "react-native"
+
 import styles from "./EmailFormInput.styles"
 
 type Props = {
@@ -8,18 +10,21 @@ type Props = {
   style?: ViewStyle
 }
 
-const EmailFormInput = ({ placeholder, value, onChangeText, style }: Props) => {
-  return (
-    <View style={{ ...styles.emailFormInputContainer, ...style }}>
-      <TextInput
-        style={styles.emailFormInnerContainer}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-      />
-      <Text style={styles.emailSuffix}>@sch.ac.kr</Text>
-    </View>
-  )
-}
+const EmailFormInput = forwardRef<TextInput, Props>(
+  ({ placeholder, value, onChangeText, style }: Props, ref) => {
+    return (
+      <View style={{ ...styles.emailFormInputContainer, ...style }}>
+        <TextInput
+          style={styles.emailFormInnerContainer}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          ref={ref}
+        />
+        <Text style={styles.emailSuffix}>@sch.ac.kr</Text>
+      </View>
+    )
+  },
+)
 
 export default EmailFormInput

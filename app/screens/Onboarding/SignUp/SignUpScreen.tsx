@@ -4,8 +4,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
+  GestureResponderEvent,
 } from "react-native"
-import React, { useState } from "react"
+import React, { useState, createRef, RefObject } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useHeaderHeight } from "@react-navigation/elements"
 
@@ -16,6 +18,7 @@ import {
   EmailFormInput,
 } from "../../../components/FormInput"
 import { Button } from "../../../components/Button"
+import { CheckBox as SexRadioButton } from "@rneui/themed"
 
 import styles from "./SignUpScreen.styles"
 import Layout from "../../../style/layout"
@@ -47,16 +50,111 @@ const SignUpScreen = (props: Props) => {
   const [userName, setUserName] = useState("")
   const [userNameError, setUserNameError] = useState("")
   const [major, setMajor] = useState("")
-  const [majorError, setMajorError] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [phoneNumberError, setPhoneNumberError] = useState("")
-  const [sex, setSex] = useState("")
+  const [male, setMale] = useState(false)
+  const [female, setFemale] = useState(false)
 
   const [didSubmitAuthCode, setDidSubmitAuthCode] = useState(false)
   const [authCodeCorrect, setAuthCodeCorrect] = useState(false)
   const [didSubmitUserName, setDidSubmitUserName] = useState(false)
   const [userNameDuplicate, setUserNameDuplicate] = useState(false)
   const [passwordSame, setPasswordSame] = useState(false)
+
+  const emailRef = createRef<TextInput>()
+  const authCodeRef = createRef<TextInput>()
+  const passwordRef = createRef<TextInput>()
+  const passwordConfirmRef = createRef<TextInput>()
+  const addressRef = createRef<TextInput>()
+  const nameRef = createRef<TextInput>()
+  const userNameRef = createRef<TextInput>()
+
+  const focus = (ref: RefObject<TextInput>): void => {
+    ref.current?.focus()
+  }
+
+  const onMaleButtonPressed = (): void => {
+    setMale(true)
+    setFemale(false)
+  }
+  const onFemaleButtonPressed = (): void => {
+    setMale(false)
+    setFemale(true)
+  }
+
+  const handleSignUpButtonPressed = (): void => {
+    let isEmailCorrect: boolean = false
+    let isAuthCodeCorrect: boolean = false
+    let isPasswordCorrect: boolean = false
+    // let isPasswordConfirmCorrect: boolean = false
+    let isAddressCorrect: boolean = false
+    let isNameCorrect: boolean = false
+    let isUserNameCorrect: boolean = false
+
+    // Check Email, Auth Code
+    isEmailCorrect = !checkFormEmpty(
+      email,
+      setEmailError,
+      "이메일을 입력하세요",
+    )
+
+    isAuthCodeCorrect =
+      !checkFormEmpty(authCode, setAuthCodeError, "인증코드를 입력하세요") &&
+      checkInfoSubmit(
+        didSubmitAuthCode,
+        setAuthCodeError,
+        "인증이 완료되지 않았습니다",
+      ) &&
+      checkInfoCorrect(
+        authCodeCorrect,
+        setAuthCodeError,
+        "인증번호가 일치하지 않습니다",
+      )
+
+    // Check Password, Password Confirm
+    isPasswordCorrect = checkFormEmpty(
+      password,
+      setPasswordError,
+      "비밀번호를 입력하세요",
+    )
+    !checkFormEmpty(
+      passwordConfirm,
+      setPasswordConfirmError,
+      "비밀번호 확인을 입력하세요",
+    ) && checkPasswordSame(password, passwordConfirm, setPasswordConfirmError)
+
+    // Check Address
+    isAddressCorrect = checkFormEmpty(
+      address,
+      setAddressError,
+      "기본 배달 주소를 입력하세요",
+    )
+
+    // Check Name
+    isNameCorrect = checkFormEmpty(name, setNameError, "이름을 입력하세요")
+
+    // Check Username
+    isUserNameCorrect =
+      !checkFormEmpty(userName, setUserNameError, "닉네임을 입력하세요") &&
+      checkInfoSubmit(
+        didSubmitUserName,
+        setUserNameError,
+        "중복확인을 해주세요",
+      ) &&
+      checkInfoCorrect(
+        userNameDuplicate,
+        setUserNameError,
+        "중복된 닉네임입니다",
+      )
+
+    !isUserNameCorrect && focus(userNameRef)
+    !isNameCorrect && focus(nameRef)
+    !isAddressCorrect && focus(addressRef)
+    // !isPasswordConfirmCorrect && focus(passwordConfirmRef)
+    !isPasswordCorrect && focus(passwordRef)
+    !isAuthCodeCorrect && focus(authCodeRef)
+    !isEmailCorrect && focus(emailRef)
+  }
 
   // onpress auth code send
   // onpress auth code check
@@ -66,7 +164,7 @@ const SignUpScreen = (props: Props) => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
-      keyboardVerticalOffset={headerHeight}
+      keyboardVerticalOffset={headerHeight - 30}
     >
       <ScrollView
         style={{
@@ -90,6 +188,7 @@ const SignUpScreen = (props: Props) => {
                 setEmail(newEmail)
               }}
               placeholder="아이디를 입력하세요"
+              ref={emailRef}
               style={{ flex: 1 }}
             />
             <Button
@@ -112,6 +211,8 @@ const SignUpScreen = (props: Props) => {
                 setAuthCode(newAuthCode)
               }}
               placeholder="인증번호를 입력하세요"
+              keyboardType="numeric"
+              ref={authCodeRef}
               style={{ flex: 1 }}
             />
             <Button
@@ -134,6 +235,7 @@ const SignUpScreen = (props: Props) => {
             }}
             placeholder="비밀번호를 입력하세요"
             secureTextEntry={true}
+            ref={passwordRef}
           />
           <FormInputError>{passwordError}</FormInputError>
         </View>
@@ -149,6 +251,7 @@ const SignUpScreen = (props: Props) => {
             }}
             placeholder="비밀번호를 입력하세요"
             secureTextEntry={true}
+            ref={passwordConfirmRef}
           />
           <FormInputError>{passwordConfirmError}</FormInputError>
         </View>
@@ -163,6 +266,7 @@ const SignUpScreen = (props: Props) => {
               setAddress(newAddress)
             }}
             placeholder="기본값으로 설정할 배달 주소를 입력하세요"
+            ref={addressRef}
           />
           <FormInputError>{addressError}</FormInputError>
         </View>
@@ -173,12 +277,13 @@ const SignUpScreen = (props: Props) => {
           </FormInputLabel>
           <FormInput
             value={name}
-            onChangeText={(newEmail) => {
-              setEmail(newEmail)
+            onChangeText={(newName) => {
+              setName(newName)
             }}
             placeholder="이름을 입력하세요"
+            ref={nameRef}
           />
-          <FormInputError>{emailError}</FormInputError>
+          <FormInputError>{nameError}</FormInputError>
         </View>
         {/* User Name Form */}
         <View style={styles.signUpFormInputContainer}>
@@ -189,9 +294,10 @@ const SignUpScreen = (props: Props) => {
             <FormInput
               value={userName}
               onChangeText={(newUserName) => {
-                setEmail(newUserName)
+                setUserName(newUserName)
               }}
               placeholder="닉네임을 입력하세요"
+              ref={userNameRef}
               style={{ flex: 1 }}
             />
             <Button
@@ -210,7 +316,7 @@ const SignUpScreen = (props: Props) => {
           <FormInput
             value={major}
             onChangeText={(newMajor) => {
-              setEmail(newMajor)
+              setMajor(newMajor)
             }}
             placeholder="학과를 입력하세요"
           />
@@ -223,9 +329,10 @@ const SignUpScreen = (props: Props) => {
           <FormInput
             value={phoneNumber}
             onChangeText={(newPhoneNumber) => {
-              setEmail(newPhoneNumber)
+              setPhoneNumber(newPhoneNumber)
             }}
             placeholder="전화번호를 입력하세요"
+            keyboardType="numeric"
           />
           <FormInputError>{phoneNumberError}</FormInputError>
         </View>
@@ -234,71 +341,30 @@ const SignUpScreen = (props: Props) => {
           <FormInputLabel style={styles.signUpFormInputLabel}>
             성별
           </FormInputLabel>
+          <View style={styles.sexButtonSection}>
+            <SexRadioButton
+              title="남자"
+              checked={male}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              textStyle={styles.sexButtonTitle}
+              checkedColor={styles.sexButtonCheckbox.color}
+              onPress={onMaleButtonPressed}
+            />
+            <SexRadioButton
+              title="여자"
+              checked={female}
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              textStyle={styles.sexButtonTitle}
+              checkedColor={styles.sexButtonCheckbox.color}
+              onPress={onFemaleButtonPressed}
+            />
+          </View>
         </View>
 
         {/* Button */}
-        <Button
-          title="순부름 시작하기"
-          onPress={() => {
-            // Check Email, Auth Code
-            checkFormEmpty(email, setEmailError, "이메일을 입력하세요")
-            !checkFormEmpty(
-              authCode,
-              setAuthCodeError,
-              "인증코드를 입력하세요",
-            ) &&
-              checkInfoSubmit(
-                didSubmitAuthCode,
-                setAuthCodeError,
-                "인증이 완료되지 않았습니다",
-              ) &&
-              checkInfoCorrect(
-                authCodeCorrect,
-                setAuthCodeError,
-                "인증번호가 일치하지 않습니다",
-              )
-
-            // Check Password, Password Confirm
-            checkFormEmpty(password, setPasswordError, "비밀번호를 입력하세요")
-            !checkFormEmpty(
-              passwordConfirm,
-              setPasswordConfirmError,
-              "비밀번호 확인을 입력하세요",
-            ) &&
-              checkPasswordSame(
-                password,
-                passwordConfirm,
-                setPasswordConfirmError,
-              )
-
-            // Check Address
-            checkFormEmpty(
-              address,
-              setAddressError,
-              "기본 배달 주소를 입력하세요",
-            )
-
-            // Check Name
-            checkFormEmpty(name, setNameError, "이름을 입력하세요")
-
-            // Check Username
-            !checkFormEmpty(
-              userName,
-              setUserNameError,
-              "닉네임을 입력하세요",
-            ) &&
-              checkInfoSubmit(
-                didSubmitUserName,
-                setUserNameError,
-                "중복확인을 해주세요",
-              ) &&
-              checkInfoCorrect(
-                userNameDuplicate,
-                setUserNameError,
-                "중복된 닉네임입니다",
-              )
-          }}
-        />
+        <Button title="순부름 시작하기" onPress={handleSignUpButtonPressed} />
       </ScrollView>
     </KeyboardAvoidingView>
   )

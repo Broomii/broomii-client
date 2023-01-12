@@ -19,7 +19,8 @@ export default StyleSheet.create({
     height: 47,
   },
   emailFormInnerContainer: {
-    width: "auto"
+    width: "auto",
+    height: 47,
   },
   emailSuffix: {
     fontFamily: Font.FontWeight.Medium,

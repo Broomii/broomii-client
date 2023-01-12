@@ -1,4 +1,6 @@
 import { StyleSheet } from "react-native"
+import colors from "../../../style/colors"
+import { Font } from "../../../style/font"
 
 export default StyleSheet.create({
   signUpScreenContainer: {
@@ -16,4 +18,15 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  sexButtonSection: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  sexButtonTitle: {
+    fontFamily: Font.FontWeight.Medium,
+    fontSize: Font.FontSize.H3,
+  },
+  sexButtonCheckbox: {
+    color: colors.brand,
+  }
 })

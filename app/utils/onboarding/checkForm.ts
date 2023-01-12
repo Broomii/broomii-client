@@ -55,3 +55,7 @@ export const checkPasswordSame = (
     return false
   }
 }
+
+export const isFormCorrect = (errorMessage: string): boolean => {
+  return errorMessage === ""
+}

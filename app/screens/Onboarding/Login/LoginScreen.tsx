@@ -3,15 +3,15 @@ import { useState } from "react"
 import styles from "./LoginScreen.styles"
 import { StackScreenProps } from "@react-navigation/stack"
 
+import { Button, TextButton } from "../../../components/Button"
 import {
   FormInput,
   FormInputLabel,
   FormInputError,
   EmailFormInput,
 } from "../../../components/FormInput"
-import { Button, TextButton } from "../../../components/Button"
-import Layout from "../../../style/layout"
 import { Font } from "../../../style/font"
+import Layout from "../../../style/layout"
 import { checkFormEmpty } from "../../../utils/onboarding/checkForm"
 
 import { OnboardingParamList } from "../../../navigation/Onboarding/OnboardingScreensNavigator"
