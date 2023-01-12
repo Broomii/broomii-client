@@ -12,7 +12,7 @@ import {
 import { Button, TextButton } from "../../../components/Button"
 import Layout from "../../../style/layout"
 import { Font } from "../../../style/font"
-import { checkFormEmpty } from "../../../utils/onboarding/checkFormEmpty"
+import { checkFormEmpty } from "../../../utils/onboarding/checkForm"
 
 import { OnboardingParamList } from "../../../navigation/Onboarding/OnboardingScreensNavigator"
 
@@ -42,7 +42,7 @@ const LoginScreen = ({ navigation }: Props) => {
           onChangeText={(newEmail) => {
             setEmail(newEmail)
           }}
-          placeholder="아이디"
+          placeholder="아이디를 입력하세요"
         />
         <FormInputError>{emailError}</FormInputError>
       </View>
@@ -55,7 +55,7 @@ const LoginScreen = ({ navigation }: Props) => {
           onChangeText={(newPassword) => {
             setPassword(newPassword)
           }}
-          placeholder="비밀번호"
+          placeholder="비밀번호를 입력하세요"
           secureTextEntry={true}
         />
         <FormInputError>{passwordError}</FormInputError>

@@ -1,15 +1,16 @@
-import { View, Text, TextInput } from "react-native"
+import { View, Text, TextInput, ViewStyle } from "react-native"
 import styles from "./EmailFormInput.styles"
 
 type Props = {
   placeholder: string
   value: string
   onChangeText: (text: string) => void
+  style?: ViewStyle
 }
 
-const EmailFormInput = ({ placeholder, value, onChangeText }: Props) => {
+const EmailFormInput = ({ placeholder, value, onChangeText, style }: Props) => {
   return (
-    <View style={styles.emailFormInputContainer}>
+    <View style={{ ...styles.emailFormInputContainer, ...style }}>
       <TextInput
         style={styles.emailFormInnerContainer}
         value={value}

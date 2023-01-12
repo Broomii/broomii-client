@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native"
 
 export default StyleSheet.create({
   signUpScreenContainer: {
-    paddingVertical: 20,
+    // paddingBottom: insets.bottom
   },
   signUpFormInputContainer: {
     width: "100%",
@@ -10,5 +10,10 @@ export default StyleSheet.create({
   },
   signUpFormInputLabel: {
     marginBottom: 10,
+  },
+  signUpFormButtonSection: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 })

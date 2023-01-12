@@ -1,11 +1,12 @@
-import { View, Text, TextInput } from "react-native"
+import { View, Text, TextInput, ViewStyle } from "react-native"
 import styles from "./FormInput.styles"
 
 type Props = {
   placeholder: string
   value: string
   onChangeText: (text: string) => void
-  secureTextEntry?: boolean
+  secureTextEntry?: boolean,
+  style?: ViewStyle
 }
 
 const FormInput = ({
@@ -13,9 +14,10 @@ const FormInput = ({
   value,
   onChangeText,
   secureTextEntry,
+  style
 }: Props) => {
   return (
-    <View style={styles.formInputContainer}>
+    <View style={{...styles.formInputContainer, ...style}}>
       <TextInput
         value={value}
         onChangeText={onChangeText}

@@ -14,6 +14,6 @@ export default StyleSheet.create({
     borderRadius: 15,
 
     height: 47,
-    width: "100%",
-  },
+    width: "auto",
+  }
 })

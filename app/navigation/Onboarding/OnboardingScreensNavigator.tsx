@@ -3,6 +3,7 @@ import {
   createStackNavigator,
   TransitionPresets,
 } from "@react-navigation/stack"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Font } from "../../style/font"
 import colors from "../../style/colors"
@@ -24,6 +25,8 @@ export type OnboardingParamList = {
 const Stack = createStackNavigator<OnboardingParamList>()
 
 const OnboardingScreensNavigator = (props: Props) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <>
       <Stack.Navigator
@@ -35,10 +38,13 @@ const OnboardingScreensNavigator = (props: Props) => {
             fontFamily: Font.FontWeight.Bold,
             fontSize: Font.FontSize.H3,
           },
-          headerStyle: {
-            height: 55,
+          headerTitleContainerStyle: {
+            paddingBottom: 10
           },
           headerBackTitle: "로그인",
+          headerStyle: {
+            height: 50 + insets.top,
+          }
         }}
       >
         <Stack.Screen

@@ -17,10 +17,9 @@ export default StyleSheet.create({
     borderRadius: 15,
 
     height: 47,
-    width: "100%",
   },
   emailFormInnerContainer: {
-    flex: 1,
+    width: "auto"
   },
   emailSuffix: {
     fontFamily: Font.FontWeight.Medium,

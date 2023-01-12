@@ -1,7 +1,9 @@
 import "react-native-gesture-handler"
 import { StatusBar } from "expo-status-bar"
 import React from "react"
-import { StyleSheet, Text, View, SafeAreaView } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
+import { SafeAreaProvider } from "react-native-safe-area-context"
+
 import Navigation from "./app/navigation"
 import {
   useFonts,
@@ -23,19 +25,19 @@ export default function App() {
     NotoSansKR_900Black,
   })
 
+  // useSafeAreaInsets()
   if (!fontsLoaded) {
     return <StatusBar />
   } else
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaProvider>
         <Navigation />
-      </SafeAreaView>
+      </SafeAreaProvider>
     )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    fontFamily: "NotoSansKR_100Thin",
   },
 })
