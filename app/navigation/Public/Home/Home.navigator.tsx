@@ -1,7 +1,9 @@
-import { View, Text } from "react-native"
+import { View, Text, Dimensions } from "react-native"
 import React from "react"
 import colors from "../../../style/colors"
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
+import { createMaterialTopTabNavigator, MaterialTopTabBar } from "@react-navigation/material-top-tabs"
+import { Font } from "../../../style/font"
+import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs"
 
 type Props = {}
 const Tab = createMaterialTopTabNavigator()
@@ -16,10 +18,22 @@ const HomeNavigator = (props: Props) => {
         screenOptions={{
           tabBarIndicatorStyle: {
             backgroundColor: colors.brand,
+            width: 50,
+            left: "14%",
           },
-          tabBarActiveTintColor: "black",
-          tabBarStyle: { width: "50%", elevation: 0 },
+          tabBarActiveTintColor: colors.primary,
+          tabBarStyle: { width: "60%", elevation: 0 },
           tabBarPressColor: "transparent",
+          tabBarLabelStyle: {
+            fontFamily: Font.FontWeight.Medium,
+            fontSize: Font.FontSize.H3,
+            lineHeight: 30,
+            margin: 0
+          },
+          tabBarContentContainerStyle: {
+            paddingBottom: 0,
+            paddingTop: 10
+          },
         }}
         sceneContainerStyle={{ backgroundColor: "white" }}
       >

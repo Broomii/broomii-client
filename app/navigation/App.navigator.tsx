@@ -4,7 +4,7 @@ import OnboardingScreensNavigation from "./Onboarding"
 import PublicScreensNavigation from "./Public"
 
 const AppNavigator = () => {
-  const isToken = false
+  const isToken = true
 
   return (
     <>

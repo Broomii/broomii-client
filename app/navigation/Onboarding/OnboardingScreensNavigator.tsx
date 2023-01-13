@@ -25,7 +25,7 @@ export type OnboardingParamList = {
 const Stack = createStackNavigator<OnboardingParamList>()
 
 const OnboardingScreensNavigator = (props: Props) => {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets()
 
   return (
     <>
@@ -39,12 +39,12 @@ const OnboardingScreensNavigator = (props: Props) => {
             fontSize: Font.FontSize.H3,
           },
           headerTitleContainerStyle: {
-            paddingBottom: 10
+            paddingBottom: 10,
           },
           headerBackTitle: "로그인",
           headerStyle: {
             height: 50 + insets.top,
-          }
+          },
         }}
       >
         <Stack.Screen
