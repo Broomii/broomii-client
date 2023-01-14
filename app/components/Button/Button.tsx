@@ -1,22 +1,21 @@
 import { View, Text, Pressable, ViewStyle, TextStyle } from "react-native"
 import styles from "./Button.styles"
 
+import colors from "../../style/colors"
+import { Font } from "../../style/font"
+
 type Props = {
   onPress: () => void
   title: string
   style?: ViewStyle
-  variant?: "default" | "thickButton" | "smallButton"
+  variant?: "default" | "smallButton"
 }
 
 type buttonStylesType = {
   default: {
     container: ViewStyle
     title: TextStyle
-  }
-  thickButton: {
-    container: ViewStyle
-    title: TextStyle
-  }
+  },
   smallButton: {
     container: ViewStyle
     title: TextStyle
@@ -27,10 +26,6 @@ const Button = ({ onPress, title, style, variant = "default" }: Props) => {
   const buttonStyles: buttonStylesType = {
     default: {
       container: styles.defaultButtonContainer,
-      title: styles.defaultButtonTitle,
-    },
-    thickButton: {
-      container: styles.thickButtonContainer,
       title: styles.defaultButtonTitle,
     },
     smallButton: {

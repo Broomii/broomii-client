@@ -10,26 +10,15 @@ export default StyleSheet.create({
 
     borderRadius: 15,
     width: "100%",
-    height: 50,
+    height: 60,
 
     backgroundColor: colors.brand,
   },
   defaultButtonTitle: {
     color: colors.primaryInvert,
     fontSize: Font.FontSize.H3,
-    fontFamily: Font.FontWeight.Medium,
+    fontFamily: Font.FontWeight.Bold,
     lineHeight: Font.FontSize.H3 + 10, // 없으면 다르게 보인다
-  },
-  thickButtonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-
-    borderRadius: 15,
-    width: "100%",
-    height: 60,
-
-    backgroundColor: colors.brand,
   },
   smallButtonContainer: {
     display: "flex",

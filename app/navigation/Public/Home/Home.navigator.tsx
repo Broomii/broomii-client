@@ -5,11 +5,11 @@ import { createMaterialTopTabNavigator, MaterialTopTabBar } from "@react-navigat
 import { Font } from "../../../style/font"
 import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs"
 
+import OrderScreen from "../../../screens/Order/OrderScreen"
+import RiderScreen from "../../../screens/Rider/RiderScreen"
+
 type Props = {}
 const Tab = createMaterialTopTabNavigator()
-
-const OrderScreen = () => <Text>order</Text>
-const RiderScreen = () => <Text>rider</Text>
 
 const HomeNavigator = (props: Props) => {
   return (

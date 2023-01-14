@@ -2,17 +2,17 @@ import { StyleSheet, Platform } from "react-native"
 
 import { Layout } from "../../constant"
 
-const isAndroid: boolean = Platform.OS == "android" ? true : false
-
 export default StyleSheet.create({
   containerNoPadding: {
     flex: 1,
   },
   containerWithPadding: {
     flex: 1,
-    paddingHorizontal: Layout.PADDING_HORIZONTAL,
+    paddingHorizontal: Layout.paddingHorizontal,
   },
-  androidNavTitle: {
-    paddingLeft: isAndroid ? 6 : 0,
+  containerWithHorizontalFlex: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 })
