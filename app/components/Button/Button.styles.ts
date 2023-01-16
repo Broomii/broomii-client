@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native"
-import colors from "../../style/colors"
-import { Font } from "../../style/font"
+
+import { styleKit } from "../../style"
 
 export default StyleSheet.create({
   defaultButtonContainer: {
@@ -11,14 +11,13 @@ export default StyleSheet.create({
     borderRadius: 15,
     width: "100%",
     height: 60,
-
-    backgroundColor: colors.brand,
+    backgroundColor: styleKit.colors.brand,
   },
   defaultButtonTitle: {
-    color: colors.primaryInvert,
-    fontSize: Font.FontSize.H3,
-    fontFamily: Font.FontWeight.Bold,
-    lineHeight: Font.FontSize.H3 + 10, // 없으면 다르게 보인다
+    color: styleKit.colors.primaryInvert,
+    fontSize: styleKit.font.FontSize.H3,
+    fontFamily: styleKit.font.FontWeight.Bold,
+    // lineHeight: styleKit.font.FontSize.H3 + 10, // 없으면 다르게 보인다
   },
   smallButtonContainer: {
     display: "flex",
@@ -26,16 +25,18 @@ export default StyleSheet.create({
     alignItems: "center",
 
     borderRadius: 15,
-    width: 100,
-    height: 47,
-    marginLeft: 4,
 
-    backgroundColor: colors.brand,
+    minWidth: "auto",
+    minHeight: 40,
+    marginLeft: 4,
+    paddingHorizontal: styleKit.spacing.sm,
+
+    backgroundColor: styleKit.colors.brand,
   },
   smallButtonTitle: {
-    color: colors.primaryInvert,
-    fontSize: Font.FontSize.Tertiary,
-    fontFamily: Font.FontWeight.Medium,
-    lineHeight: Font.FontSize.Tertiary + 5, // 없으면 다르게 보인다
+    color: styleKit.colors.primaryInvert,
+    fontSize: styleKit.font.FontSize.Tertiary,
+    fontFamily: styleKit.font.FontWeight.Medium,
+    // lineHeight: styleKit.font.FontSize.Tertiary + 5, // 없으면 다르게 보인다
   }
 })

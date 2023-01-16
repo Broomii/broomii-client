@@ -10,10 +10,10 @@ import { isAOS } from "../../utils/platform"
 
 type Props = {
   variant?: "pending" | "inProgress" | "done"
+  onPress?: () => void
 }
 
-const Card = ({ variant = "pending" }: Props) => {
-
+const Card = ({ variant = "pending", onPress }: Props) => {
   const child = (
     <View style={styles.container}>
       <Text style={styles.title(variant)}>삼각자 배달 원합니다</Text>
@@ -41,11 +41,15 @@ const Card = ({ variant = "pending" }: Props) => {
         false,
         undefined,
       )}
+      onPress={onPress}
     >
       {child}
     </TouchableNativeFeedback>
   ) : (
-    <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}>
+    <Pressable
+      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+      onPress={onPress}
+    >
       {child}
     </Pressable>
   )

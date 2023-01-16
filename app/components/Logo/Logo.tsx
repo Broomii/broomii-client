@@ -15,12 +15,10 @@ const styles = StyleSheet.create({
 
 const Logo = (props: Props) => {
   return (
-    <>
-      <Image
-        style={styles.logo}
-        source={require("../../../assets/images/logo.png")}
-      />
-    </>
+    <Image
+      style={styles.logo}
+      source={require("../../../assets/images/logo.png")}
+    />
   )
 }
 

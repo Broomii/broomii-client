@@ -1,16 +1,16 @@
 // iOS Build
 
-// {
-//   "build": {
-//     "development-simulator": {
-//       "developmentClient": true,
-//       "distribution": "internal",
-//       "ios": {
-//         "simulator": true
-//       }
-//     }
-//   }
-// }
+{
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
 
 // Android Build
 
@@ -29,11 +29,11 @@
 
 // Internal
 
-{
-  "build": {
-    "preview": {
-      "distribution": "internal",
-      "channel": "preview"
-    }
-  }
-}
+// {
+//   "build": {
+//     "preview": {
+//       "distribution": "internal",
+//       "channel": "preview"
+//     }
+//   }
+// }

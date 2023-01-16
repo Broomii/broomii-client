@@ -1,1 +1,1 @@
-export { default } from "./Home.navigator"
+export { default } from "./TopTapBar/TopTabBar.navigator"

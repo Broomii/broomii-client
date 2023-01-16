@@ -65,7 +65,11 @@ const OnboardingScreensNavigator = (props: Props) => {
         <Stack.Screen
           name="ChangePassword"
           component={ChangePasswordScreen}
-          options={{ headerShown: true, headerTitle: "비밀번호 변경하기" }}
+          options={{
+            headerShown: true,
+            headerTitle: "비밀번호 변경하기",
+            headerBackTitle: " ",
+          }}
         />
       </Stack.Navigator>
     </>

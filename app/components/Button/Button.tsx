@@ -1,8 +1,7 @@
-import { View, Text, Pressable, ViewStyle, TextStyle } from "react-native"
+import { View, Pressable, ViewStyle, TextStyle } from "react-native"
 import styles from "./Button.styles"
 
-import colors from "../../style/colors"
-import { Font } from "../../style/font"
+import Text from "../Text"
 
 type Props = {
   onPress: () => void

@@ -2,7 +2,7 @@ import { StyleSheet, TextStyle, ViewStyle } from "react-native"
 
 import { styleKit } from "../../style"
 
-interface cardStyle {
+interface CardStyle {
   container: ViewStyle
   title: (variant: "pending" | "inProgress" | "done") => TextStyle
   location: (variant: "pending" | "inProgress" | "done") => TextStyle
@@ -11,7 +11,7 @@ interface cardStyle {
   flagText: TextStyle
 }
 
-export default StyleSheet.create<cardStyle | any>({
+export default StyleSheet.create<CardStyle | any>({
   container: {
     backgroundColor: styleKit.colors.primaryInvert,
     borderBottomWidth: 0.2,

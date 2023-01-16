@@ -1,7 +1,10 @@
 import { NavigationContainer } from "@react-navigation/native"
+import { createStackNavigator } from "@react-navigation/stack"
 
 import OnboardingScreensNavigation from "./Onboarding"
 import PublicScreensNavigation from "./Public"
+
+export const MainStack = createStackNavigator()
 
 const AppNavigator = () => {
   const isToken = true
@@ -9,11 +12,19 @@ const AppNavigator = () => {
   return (
     <>
       <NavigationContainer>
-        {isToken ? (
-          <PublicScreensNavigation />
-        ) : (
-          <OnboardingScreensNavigation />
-        )}
+        <MainStack.Navigator screenOptions={{ headerShown: false }}>
+          {isToken ? (
+            <MainStack.Screen
+              name="PublicScreens"
+              component={PublicScreensNavigation}
+            />
+          ) : (
+            <MainStack.Screen
+              name="OnboardingScreens"
+              component={OnboardingScreensNavigation}
+            />
+          )}
+        </MainStack.Navigator>
       </NavigationContainer>
     </>
   )

@@ -35,7 +35,7 @@
 		</data>
 		<key>EXConstants.bundle/app.config</key>
 		<data>
-		kl2yfCQDWbUuhkNVBoKIO9MyYto=
+		Dn8Rm5O4XXcWaWpPZhd+BxaF4iM=
 		</data>
 		<key>EXDevLauncher.bundle/EXDevLauncherErrorView.storyboardc/EXDevLauncherErrorView.nib</key>
 		<data>
@@ -1297,9 +1297,13 @@
 		<data>
 		jELnhnqiUmua9zXW4TMLER64YlI=
 		</data>
+		<key>EXUpdates.bundle/Info.plist</key>
+		<data>
+		yWBQ/LkG5csitId8K8FP7NDnTWo=
+		</data>
 		<key>Expo.plist</key>
 		<data>
-		PWkV/a3pjlDHbnTcuyP6H1BHrgc=
+		M0ATS2tcAM+bsphWRcd0u7HXJ1E=
 		</data>
 		<key>Frameworks/libswift_Concurrency.dylib</key>
 		<data>
@@ -1376,7 +1380,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			g6uhxStUjrF3nuRscu163NK1miexvQRqnpCtx7hw/u8=
+			1unT2mkDBq1p5Ro5pjcS11rz9rat4vaf81czFwhv6QM=
 			</data>
 		</dict>
 		<key>EXDevLauncher.bundle/EXDevLauncherErrorView.storyboardc/EXDevLauncherErrorView.nib</key>
@@ -3584,11 +3588,18 @@
 			bPeJCCagL8dRr7j9xXEM8kaBLwLhvfqWquuZRKiEUoY=
 			</data>
 		</dict>
+		<key>EXUpdates.bundle/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			plnOPd8J+NX54doplSBa4LTAKIb070g/viIomyPOaeE=
+			</data>
+		</dict>
 		<key>Expo.plist</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			B3xeSJJ2eCBYV8Qu/qqRqrhwmnMz17wpjab0kDb9kb8=
+			D7qrG7dHaHcYKQlWQNMlTiy+7JT1XNjqC7NBohnDr4g=
 			</data>
 		</dict>
 		<key>Frameworks/libswift_Concurrency.dylib</key>
