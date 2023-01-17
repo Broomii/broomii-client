@@ -7,4 +7,5 @@ export default {
   gray500: "#8D8D8D",
   error: "#FF597B",
   green: "#439A97",
+  skyblue: "#38BFEF",
 }
