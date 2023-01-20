@@ -6,7 +6,7 @@ export default StyleSheet.create({
     position: "relative"
   },
   titleSection: {
-    paddingVertical: styleKit.spacing.md,
+    paddingVertical: styleKit.spacing.lg,
 
     borderBottomColor: styleKit.colors.gray100,
     borderBottomWidth: 0.5,
@@ -28,12 +28,11 @@ export default StyleSheet.create({
     fontFamily: styleKit.font.FontWeight.Regular,
   },
   contentCotainer: {
-    paddingVertical: styleKit.spacing.md,
+    paddingVertical: styleKit.spacing.lg,
   },
   content: {
     fontSize: styleKit.font.FontSize.Primary,
     fontFamily: styleKit.font.FontWeight.Regular,
-    lineHeight: 100
   },
   buttonSection: {
     width: "100%",

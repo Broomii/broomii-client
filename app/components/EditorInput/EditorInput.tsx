@@ -13,15 +13,11 @@ interface EditorInputProps extends TextInputProps {
 const EditorInput = ({
   placeholder,
   variant = "default",
-  scrollEnabled
+  scrollEnabled,
 }: EditorInputProps) => {
   return (
     <>
-      <View
-        style={[
-          styles.outerContainer(variant),
-        ]}
-      >
+      <View style={[styles.outerContainer(variant)]}>
         <TextInput
           style={styles.inputBox(variant)}
           placeholder={placeholder}

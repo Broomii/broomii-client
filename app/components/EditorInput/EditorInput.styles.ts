@@ -19,8 +19,8 @@ export default StyleSheet.create<any>({
       justifyContent: "flex-start",
       alignItems: isMult ? "stretch" : "center",
 
-      // paddingHorizontal: isMult ? styleKit.spacing.xl : styleKit.spacing.md,
-      paddingVertical: isMult ? styleKit.spacing.xl : 0,
+      // paddingHorizontal: isMult ? styleKit.spacing.lg : 0,
+      paddingVertical: isMult ? styleKit.spacing.md : 0,
       minHeight: 60,
       borderBottomWidth: isMult ? 0 : 0.5,
       borderColor: styleKit.colors.gray100,
