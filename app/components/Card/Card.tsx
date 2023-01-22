@@ -10,10 +10,11 @@ import { isAOS } from "../../utils/platform"
 
 type Props = {
   variant?: "pending" | "inProgress" | "done"
+  stateButton?: boolean
   onPress?: () => void
 }
 
-const Card = ({ variant = "pending", onPress }: Props) => {
+const Card = ({ variant = "pending", onPress, stateButton = false }: Props) => {
   const child = (
     <View style={styles.container}>
       <Text style={styles.title(variant)}>삼각자 배달 원합니다</Text>
@@ -29,6 +30,10 @@ const Card = ({ variant = "pending", onPress }: Props) => {
               {variant === "inProgress" ? "배달 중" : "배달 완료"}
             </Text>
           </View>
+        ) : stateButton ? (
+          <Pressable style={styles.stateButtonContainer}>
+            <Text>대기 중</Text>
+          </Pressable>
         ) : null}
       </View>
     </View>

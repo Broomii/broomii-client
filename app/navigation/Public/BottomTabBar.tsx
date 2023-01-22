@@ -16,7 +16,7 @@ import defaultHeaderOptions from "../defaultHeaderOptions"
 import Logo from "../../components/Logo"
 import HomeTopTabBar from "./Home"
 
-import ChattingScreen from "../../screens/Chatting/ChattingScreen"
+import { ChattingScreen } from "../../screens/Chatting"
 import SettingsScreen from "../../screens/Settings/SettingsScreen"
 
 type BottomTabParamList = {

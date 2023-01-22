@@ -9,24 +9,25 @@ interface CardStyle {
   tip: (variant: "pending" | "inProgress" | "done") => TextStyle
   flagContainer: (variant: "inProgress" | "done") => ViewStyle
   flagText: TextStyle
+  stateButtonContainer: ViewStyle
 }
 
-export default StyleSheet.create<CardStyle | any>({
+export default StyleSheet.create<CardStyle>({
   container: {
     backgroundColor: styleKit.colors.primaryInvert,
     borderBottomWidth: 0.2,
     borderBottomColor: styleKit.colors.gray100,
     padding: styleKit.spacing.md,
   },
-  title: (variant: "pending" | "inProgress" | "done") => ({
+  title: (variant: "pending" | "inProgress" | "done"): TextStyle => ({
     fontSize: styleKit.font.FontSize.H3,
-    fontFamily: styleKit.font.FontWeight.Medium,
+    fontFamily: styleKit.font.FontWeight.Regular,
     color:
       variant === "done" ? styleKit.colors.gray300 : styleKit.colors.primary,
 
     marginBottom: styleKit.spacing.md,
   }),
-  location: (variant: "pending" | "inProgress" | "done") => ({
+  location: (variant: "pending" | "inProgress" | "done"): TextStyle => ({
     fontSize: styleKit.font.FontSize.Tertiary,
     fontFamily: styleKit.font.FontWeight.Light,
     color:
@@ -58,4 +59,19 @@ export default StyleSheet.create<CardStyle | any>({
     fontFamily: styleKit.font.FontWeight.Medium,
     color: styleKit.colors.primaryInvert,
   },
+  stateButtonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+
+    padding: styleKit.spacing.xs,
+    marginLeft: "auto",
+    width: 50,
+    height: 30,
+
+    borderColor: styleKit.colors.gray500,
+    borderWidth: 0.3,
+    borderRadius: 5,
+  }
 })

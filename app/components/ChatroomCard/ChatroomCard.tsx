@@ -1,15 +1,18 @@
-import { View, Image } from "react-native"
+import { View, Image, TouchableNativeFeedback, Pressable } from "react-native"
 import React from "react"
 
 import Text from "../Text"
+import { isAOS } from "../../utils/platform"
 
 import { styleKit } from "../../style"
 import styles from "./ChatroomCard.styles"
 
-type Props = {}
+type Props = {
+  onPress?: () => null
+}
 
-const ChatroomCard = (props: Props) => {
-  return (
+const ChatroomCard = ({ onPress }: Props) => {
+  const child = (
     <View
       style={[styleKit.layout.containerWithHorizontalFlex, styles.container]}
     >
@@ -30,6 +33,26 @@ const ChatroomCard = (props: Props) => {
         <Text style={styles.lastChat}>지금 나와있어여</Text>
       </View>
     </View>
+  )
+
+  return isAOS ? (
+    <TouchableNativeFeedback
+      background={TouchableNativeFeedback.Ripple(
+        styleKit.colors.gray100,
+        false,
+        undefined,
+      )}
+      onPress={onPress}
+    >
+      {child}
+    </TouchableNativeFeedback>
+  ) : (
+    <Pressable
+      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+      onPress={onPress}
+    >
+      {child}
+    </Pressable>
   )
 }
 

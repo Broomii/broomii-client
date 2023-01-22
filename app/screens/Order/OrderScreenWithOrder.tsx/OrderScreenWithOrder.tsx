@@ -1,6 +1,6 @@
 import { View, Text } from "react-native"
 import React from "react"
-import { StackScreenProps, StackNavigationProp } from "@react-navigation/stack"
+import { StackNavigationProp } from "@react-navigation/stack"
 
 import { PublicStackParamList } from "../../../navigation/Public/PublicScreensNavigator"
 

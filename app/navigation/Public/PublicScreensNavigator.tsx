@@ -21,6 +21,7 @@ export type PublicStackParamList = {
   BottomTabBar: undefined
   Editor: undefined
   Post: undefined
+  ChattingScreens: undefined
 }
 
 const Public = createStackNavigator<PublicStackParamList>()
@@ -46,7 +47,7 @@ const PublicScreensNavigator = () => {
         component={EditorScreen}
         options={{
           headerTitle: "주문서 작성하기",
-          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
           headerRight: () => <HeaderRightButton />,
         }}
       />
@@ -55,10 +56,14 @@ const PublicScreensNavigator = () => {
         component={PostScreen}
         options={{
           headerTitle: "",
-          headerBackTitleVisible: false,
+          headerBackTitle: "Back",
         }}
       />
-      {/* ChattingScreens */}
+      <Public.Screen
+        name="ChattingScreens"
+        component={ChattingScreens}
+        options={{ headerShown: false }}
+      />
       {/* SettingsScreens */}
     </Public.Navigator>
   )
