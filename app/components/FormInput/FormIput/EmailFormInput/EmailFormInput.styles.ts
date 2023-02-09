@@ -13,13 +13,13 @@ export default StyleSheet.create({
 
     borderColor: colors.gray300,
     borderStyle: "solid",
-    borderWidth: 1.5,
-    borderRadius: 15,
+    borderWidth: 0.7,
+    borderRadius: 16,
 
     height: 47,
   },
   emailFormInnerContainer: {
-    width: "auto",
+    flex: 1,
     height: 47,
   },
   emailSuffix: {

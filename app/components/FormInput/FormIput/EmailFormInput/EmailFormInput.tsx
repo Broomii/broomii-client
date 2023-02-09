@@ -20,6 +20,7 @@ const EmailFormInput = forwardRef<TextInput, Props>(
           onChangeText={onChangeText}
           placeholder={placeholder}
           ref={ref}
+          autoCapitalize="none"
         />
         <Text style={styles.emailSuffix}>@sch.ac.kr</Text>
       </View>

@@ -1,12 +1,17 @@
 import { View, Text } from "react-native"
-import React from "react"
+import React, { useContext } from "react"
+import { TextButton } from "../../components/Button"
+
+import { AuthContext } from "../../context/AuthContext"
 
 type Props = {}
 
 const SettingsScreen = (props: Props) => {
+  const { handleLogout } = useContext(AuthContext)
+
   return (
     <View>
-      <Text>SettingsScreen</Text>
+      <TextButton title="로그아웃" onPress={() => handleLogout()}/>
     </View>
   )
 }

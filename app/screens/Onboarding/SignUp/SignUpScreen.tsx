@@ -10,7 +10,9 @@ import {
 import React, { useState, createRef, RefObject } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useHeaderHeight } from "@react-navigation/elements"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
+import { isAOS } from "../../../utils/platform"
 import {
   FormInput,
   FormInputLabel,
@@ -28,6 +30,7 @@ import {
   checkInfoCorrect,
   checkPasswordSame,
 } from "../../../utils/onboarding/checkForm"
+import { styleKit } from "../../../style"
 
 type Props = {}
 

@@ -37,8 +37,8 @@ const TopTabBarNavigator = (props: Props) => {
         }}
         sceneContainerStyle={{ backgroundColor: "white" }}
       >
-        <Tab.Screen name="주문하기" component={OrderScreen} />
         <Tab.Screen name="배달하기" component={RiderScreen} />
+        <Tab.Screen name="주문하기" component={OrderScreen} />
       </Tab.Navigator>
     </>
   )

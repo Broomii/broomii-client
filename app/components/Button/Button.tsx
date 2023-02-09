@@ -1,4 +1,10 @@
-import { View, Pressable, ViewStyle, TextStyle } from "react-native"
+import {
+  View,
+  Pressable,
+  ViewStyle,
+  TextStyle,
+  ActivityIndicator,
+} from "react-native"
 import styles from "./Button.styles"
 
 import Text from "../Text"
@@ -8,20 +14,27 @@ type Props = {
   title: string
   style?: ViewStyle
   variant?: "default" | "smallButton"
+  isLoading?: boolean
 }
 
 type buttonStylesType = {
   default: {
     container: ViewStyle
     title: TextStyle
-  },
+  }
   smallButton: {
     container: ViewStyle
     title: TextStyle
   }
 }
 
-const Button = ({ onPress, title, style, variant = "default" }: Props) => {
+const Button = ({
+  onPress,
+  title,
+  style,
+  variant = "default",
+  isLoading = false,
+}: Props) => {
   const buttonStyles: buttonStylesType = {
     default: {
       container: styles.defaultButtonContainer,
@@ -42,7 +55,11 @@ const Button = ({ onPress, title, style, variant = "default" }: Props) => {
       ]}
       onPress={onPress}
     >
-      <Text style={buttonStyles[variant].title}>{title}</Text>
+      {isLoading ? (
+        <ActivityIndicator size={"small"} color="white" />
+      ) : (
+        <Text style={buttonStyles[variant].title}>{title}</Text>
+      )}
     </Pressable>
   )
 }
