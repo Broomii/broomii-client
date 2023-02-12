@@ -36,7 +36,7 @@ const OnboardingScreensNavigator = (props: Props) => {
           headerTitleAlign: "center",
           headerTitleStyle: {
             fontFamily: Font.FontWeight.Bold,
-            fontSize: Font.FontSize.H3,
+            fontSize: Font.FontSize.Primary,
           },
           headerTitleContainerStyle: {
             paddingBottom: 10,

@@ -26,7 +26,7 @@ export default StyleSheet.create({
 
     borderRadius: 15,
 
-    minWidth: "auto",
+    // minWidth: ,
     minHeight: 40,
     marginLeft: 4,
     paddingHorizontal: styleKit.spacing.sm,

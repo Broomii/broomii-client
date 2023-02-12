@@ -25,6 +25,7 @@ const EditorScreen = (props: Props) => {
         variant="multiline"
         placeholder={`기타 요구사항을 자유롭게 입력해주세요.\nex) 빼빼로 2통 배달 부탁드려요`}
         scrollEnabled={false}
+        outerContainerStyle={{ minHeight: 240 }}
       />
     </KeyboardAwareScrollView>
   )

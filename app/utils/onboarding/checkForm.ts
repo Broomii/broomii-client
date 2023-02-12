@@ -59,3 +59,18 @@ export const checkPasswordSame = (
 export const isFormCorrect = (errorMessage: string): boolean => {
   return errorMessage === ""
 }
+
+export const checkPhoneNumberCorrect = (
+  phone: string,
+  setErrorMessage: Dispatch<SetStateAction<string>>,
+): boolean => {
+  const prefix = phone.substring(0, 3)
+  const length = phone.length
+
+  if (prefix === "010" && length === 11) {
+    return true
+  }
+
+  setErrorMessage("전화번호의 형식이 올바르지 않습니다")
+  return false
+}

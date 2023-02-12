@@ -12,8 +12,8 @@ export const MainStack = createStackNavigator()
 
 const AppNavigator = () => {
   const isToken = false
-  const { isLoading, userToken, logout } = useContext(AuthContext)
-
+  const { isLoading, userToken } = useContext(AuthContext)
+  // console.log(userToken)
   return (
     <>
       <NavigationContainer>

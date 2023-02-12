@@ -10,7 +10,7 @@ import styles from "./Button.styles"
 import Text from "../Text"
 
 type Props = {
-  onPress: () => void
+  onPress: any
   title: string
   style?: ViewStyle
   variant?: "default" | "smallButton"

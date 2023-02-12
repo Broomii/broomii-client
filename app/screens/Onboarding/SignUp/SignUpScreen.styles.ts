@@ -24,7 +24,7 @@ export default StyleSheet.create({
   },
   sexButtonTitle: {
     fontFamily: Font.FontWeight.Medium,
-    fontSize: Font.FontSize.H3,
+    fontSize: Font.FontSize.Primary,
   },
   sexButtonCheckbox: {
     color: colors.brand,

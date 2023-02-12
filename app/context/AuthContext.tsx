@@ -1,8 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import React, { createContext, useEffect, useState, SetStateAction, Dispatch } from "react"
+import React, {
+  createContext,
+  useEffect,
+  useState,
+  SetStateAction,
+  Dispatch,
+} from "react"
 import axios from "axios"
 
+import * as SecureStore from "expo-secure-store"
+
 import { BASE_URL } from "../config"
+
+type LoginResponseDataType = {
+  accessToken: string
+  refreshToken: string
+  refreshTokenExpirationTime: number
+  success: boolean
+}
 
 export type AuthContextType = {
   handleLogin: (email: string, password: string) => void
@@ -11,13 +26,29 @@ export type AuthContextType = {
   userToken: string | null
   loginErrorMessage: string
   setLoginErrorMessage: Dispatch<SetStateAction<string>>
-}
-
-type LoginResponseDataType = {
-  accessToken: string
-  refreshToken: string
-  refreshTokenExpirationTime: number
-  success: boolean
+  checkUsernameAtServer: (username: string) => void
+  usernameDuplicate: boolean
+  checkingUsername: boolean
+  usernameError: string
+  setUsernameError: Dispatch<SetStateAction<string>>
+  emailError: string
+  setEmailError: Dispatch<SetStateAction<string>>
+  checkingEmail: boolean
+  checkEmailAtServer: (email: string) => void
+  authCodeError: string
+  setAuthCodeError: Dispatch<SetStateAction<string>>
+  checkingAuthCode: boolean
+  checkAuthCodeAtServer: (authCode: string) => void
+  authCodeCorrect: boolean
+  handleSignUp: (
+    password: string,
+    address: string,
+    name: string,
+    username: string,
+    phone: string,
+    // major: string,
+    // isMale: boolean,
+  ) => void
 }
 
 export const AuthContext = createContext<AuthContextType>({})
@@ -27,11 +58,23 @@ type AuthProviderProps = {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false) // Login, Signup Submit button
   const [userToken, setUserToken] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState()
   const [loginErrorMessage, setLoginErrorMessage] = useState("") // It includes Email Error
 
+  const [usernameDuplicate, setUsernameDuplicate] = useState(true)
+  const [checkingUsername, setChekcingUsername] = useState(false)
+  const [usernameError, setUsernameError] = useState("")
+  const [emailError, setEmailError] = useState("")
+  const [checkingEmail, setCheckingEmail] = useState(false)
+  const [capturedEmail, setCapturedEmail] = useState("")
+  const [authCodeError, setAuthCodeError] = useState("")
+  const [checkingAuthCode, setCheckingAuthCode] = useState(false)
+  const [didSubmitAuthCode, setDidSubmitAuthCode] = useState(false)
+  const [authCodeCorrect, setAuthCodeCorrect] = useState(false)
+
+  // Related to Login / Logout
   const handleLogin = (email: string, password: string) => {
     setIsLoading(true)
     console.log(email, password)
@@ -46,7 +89,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setUserToken(token)
         if (token) {
-          AsyncStorage.setItem("userToken", token)
+          SecureStore.setItemAsync("userToken", token)
         } else {
           console.log("Error: There's NO Token in Response despite of success")
         }
@@ -66,31 +109,142 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const handleLogout = () => {
     setIsLoading(true)
     setUserToken(null)
-    AsyncStorage.removeItem("userToken")
+    SecureStore.deleteItemAsync("userToken")
     setIsLoading(false)
   }
 
-  const printToken = () => {
-    AsyncStorage.getAllKeys((err, keys) => {
-      AsyncStorage.multiGet(keys, (error, stores) => {
-        stores.map((result, i, store) => {
-          console.log({ [store[i][0]]: store[i][1] })
-          return true
-        })
+  // Related to Sign Up
+
+  const checkEmailAtServer = (email: string) => {
+    setCheckingEmail(true)
+    // console.log(email)
+    axios
+      .post(`${BASE_URL}/mail/sendCertificationNumber`, {
+        email,
       })
-    })
+      .then((res) => {
+        const message = res.data.message
+        console.log(message)
+        setEmailError("이메일로 인증번호를 전송하였습니다")
+        setCapturedEmail(email)
+      })
+      .catch((e) => {
+        console.log(`Error: Checking Email at server failed, Reason: ${e}`)
+      })
+      .finally(() => {
+        setCheckingEmail(false)
+      })
+  }
+
+  const checkAuthCodeAtServer = (authCode: string) => {
+    setCheckingAuthCode(true)
+    console.log(authCode)
+
+    if (capturedEmail.trim() === "") {
+      setEmailError("다시 이메일로 인증번호를 전송하세요")
+      return
+    }
+
+    axios
+      .post(`${BASE_URL}/members/confirmCertification`, {
+        email: capturedEmail,
+        certification: authCode,
+      })
+      .then((res) => {
+        console.log(res.data)
+        setAuthCodeCorrect(true)
+        setAuthCodeError("인증번호 확인을 완료하였습니다")
+      })
+      .catch((e) => {
+        console.log(`Error Sending Auth Code - Reason: ${e}`)
+        setAuthCodeError("인증번호 확인에 실패하였습니다")
+      })
+      .finally(() => {
+        setCheckingAuthCode(false)
+      })
+  }
+
+  const checkUsernameAtServer = (username: string) => {
+    setChekcingUsername(true)
+    axios
+      .get(`${BASE_URL}/members/checkNickname/${username}`)
+      .then((res) => {
+        const message = res.data.data
+        console.log(message)
+        setUsernameError(message)
+
+        if (message === "사용할 수 있는 닉네임 입니다.") {
+          setUsernameDuplicate(false)
+        } else {
+          setUsernameDuplicate(true)
+        }
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+      .finally(() => {
+        setChekcingUsername(false)
+      })
+  }
+
+  const printTokenFromSecureStore = async () => {
+    let result = await SecureStore.getItemAsync("userToken");
+    if (result) {
+      alert("🔐 Here's your value 🔐 \n" + result);
+    } else {
+      alert('No values stored under that key.');
+    }
   }
 
   const getTokenFromLocalStorage = async () => {
-    // printToken()
+    // printTokenFromSecureStore()
+
     try {
       setIsLoading(true)
-      let token = await AsyncStorage.getItem("userToken")
+      const token = await SecureStore.getItemAsync("userToken")
       setUserToken(token)
       setIsLoading(false)
     } catch (e) {
       console.log(`is loggedin error: ${e}`)
     }
+  }
+
+  const handleSignUp = (
+    password: string,
+    address: string,
+    name: string,
+    username: string,
+    phone: string,
+  ) => {
+    setIsLoading(true)
+    axios
+      .post(`${BASE_URL}/members/join`, {
+        name,
+        nickName: username,
+        email: capturedEmail,
+        password,
+        phoneNumber: phone,
+        defaultDeliveryAddress: address,
+      })
+      .then((res) => {
+        console.log(res.data)
+        const data = res.data.data
+        const token = data.accessToken
+
+        setUserToken(token)
+        if (token) {
+          SecureStore.setItemAsync("userToken", token)
+          console.log("Sign up success")
+        } else {
+          console.log("Error: There's NO Token in Response despite of success")
+        }
+      })
+      .catch((e) => {
+        console.log(`Sign Up Error: ${e}`)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -106,6 +260,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         userToken,
         loginErrorMessage,
         setLoginErrorMessage,
+        checkUsernameAtServer,
+        usernameDuplicate,
+        checkingUsername,
+        usernameError,
+        setUsernameError,
+        emailError,
+        setEmailError,
+        checkingEmail,
+        checkEmailAtServer,
+        authCodeError,
+        setAuthCodeError,
+        checkingAuthCode,
+        checkAuthCodeAtServer,
+        authCodeCorrect,
+        handleSignUp,
       }}
     >
       {children}

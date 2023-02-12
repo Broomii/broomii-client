@@ -7,10 +7,9 @@ import {
   TextInput,
   GestureResponderEvent,
 } from "react-native"
-import React, { useState, createRef, RefObject } from "react"
+import React, { useState, createRef, RefObject, useContext } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useHeaderHeight } from "@react-navigation/elements"
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
 import { isAOS } from "../../../utils/platform"
 import {
@@ -29,19 +28,42 @@ import {
   checkInfoSubmit,
   checkInfoCorrect,
   checkPasswordSame,
+  checkPhoneNumberCorrect,
 } from "../../../utils/onboarding/checkForm"
+
+import { AuthContext } from "../../../context/AuthContext"
+
 import { styleKit } from "../../../style"
 
 type Props = {}
 
 const SignUpScreen = (props: Props) => {
+  const {
+    isLoading,
+    checkUsernameAtServer,
+    usernameDuplicate,
+    checkingUsername,
+    usernameError,
+    setUsernameError,
+    emailError,
+    setEmailError,
+    checkingEmail,
+    checkEmailAtServer,
+    authCodeError,
+    checkingAuthCode,
+    checkAuthCodeAtServer,
+    setAuthCodeError,
+    authCodeCorrect,
+    handleSignUp,
+  } = useContext(AuthContext)
+
   const insets = useSafeAreaInsets()
   const headerHeight = useHeaderHeight()
 
   const [email, setEmail] = useState("")
-  const [emailError, setEmailError] = useState("")
+  // const [emailError, setEmailError] = useState("")
   const [authCode, setAuthCode] = useState("")
-  const [authCodeError, setAuthCodeError] = useState("")
+  // const [authCodeError, setAuthCodeError] = useState("")
   const [password, setPassword] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [passwordConfirm, setPasswordConfirm] = useState("")
@@ -51,7 +73,7 @@ const SignUpScreen = (props: Props) => {
   const [name, setName] = useState("")
   const [nameError, setNameError] = useState("")
   const [userName, setUserName] = useState("")
-  const [userNameError, setUserNameError] = useState("")
+  // const [userNameError, setUserNameError] = useState("")
   const [major, setMajor] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [phoneNumberError, setPhoneNumberError] = useState("")
@@ -59,10 +81,9 @@ const SignUpScreen = (props: Props) => {
   const [female, setFemale] = useState(false)
 
   const [didSubmitAuthCode, setDidSubmitAuthCode] = useState(false)
-  const [authCodeCorrect, setAuthCodeCorrect] = useState(false)
+  // const [authCodeCorrect, setAuthCodeCorrect] = useState(false)
   const [didSubmitUserName, setDidSubmitUserName] = useState(false)
-  const [userNameDuplicate, setUserNameDuplicate] = useState(false)
-  const [passwordSame, setPasswordSame] = useState(false)
+  // const [userNameDuplicate, setUserNameDuplicate] = useState(false)
 
   const emailRef = createRef<TextInput>()
   const authCodeRef = createRef<TextInput>()
@@ -71,6 +92,7 @@ const SignUpScreen = (props: Props) => {
   const addressRef = createRef<TextInput>()
   const nameRef = createRef<TextInput>()
   const userNameRef = createRef<TextInput>()
+  const phoneNumberRef = createRef<TextInput>()
 
   const focus = (ref: RefObject<TextInput>): void => {
     ref.current?.focus()
@@ -85,6 +107,24 @@ const SignUpScreen = (props: Props) => {
     setFemale(true)
   }
 
+  const handleUserNameCheckButtonPressed = () => {
+    setDidSubmitUserName(true)
+    checkUsernameAtServer(userName)
+  }
+
+  const handleSendEmailButtonPressed = () => {
+    // const emailToSend = email + "@sch.ac.kr"
+    const emailToSend = email
+    if (!checkFormEmpty(emailToSend, setEmailError, "이메일을 입력하세요")) {
+      checkEmailAtServer(emailToSend)
+    }
+  }
+
+  const handleConfirmAuthCodeButtonPressed = () => {
+    setDidSubmitAuthCode(true)
+    checkAuthCodeAtServer(authCode)
+  }
+
   const handleSignUpButtonPressed = (): void => {
     let isEmailCorrect: boolean = false
     let isAuthCodeCorrect: boolean = false
@@ -92,7 +132,8 @@ const SignUpScreen = (props: Props) => {
     // let isPasswordConfirmCorrect: boolean = false
     let isAddressCorrect: boolean = false
     let isNameCorrect: boolean = false
-    let isUserNameCorrect: boolean = false
+    let isUsernameCorrect: boolean = false
+    let isPhoneNumberCorrect: boolean = false
 
     // Check Email, Auth Code
     isEmailCorrect = !checkFormEmpty(
@@ -115,7 +156,7 @@ const SignUpScreen = (props: Props) => {
       )
 
     // Check Password, Password Confirm
-    isPasswordCorrect = checkFormEmpty(
+    isPasswordCorrect = !checkFormEmpty(
       password,
       setPasswordError,
       "비밀번호를 입력하세요",
@@ -127,41 +168,56 @@ const SignUpScreen = (props: Props) => {
     ) && checkPasswordSame(password, passwordConfirm, setPasswordConfirmError)
 
     // Check Address
-    isAddressCorrect = checkFormEmpty(
+    isAddressCorrect = !checkFormEmpty(
       address,
       setAddressError,
       "기본 배달 주소를 입력하세요",
     )
 
     // Check Name
-    isNameCorrect = checkFormEmpty(name, setNameError, "이름을 입력하세요")
+    isNameCorrect = !checkFormEmpty(name, setNameError, "이름을 입력하세요")
 
     // Check Username
-    isUserNameCorrect =
-      !checkFormEmpty(userName, setUserNameError, "닉네임을 입력하세요") &&
+    isUsernameCorrect =
+      !checkFormEmpty(userName, setUsernameError, "닉네임을 입력하세요") &&
       checkInfoSubmit(
         didSubmitUserName,
-        setUserNameError,
+        setUsernameError,
         "중복확인을 해주세요",
       ) &&
-      checkInfoCorrect(
-        userNameDuplicate,
-        setUserNameError,
-        "중복된 닉네임입니다",
-      )
+      !usernameDuplicate
 
-    !isUserNameCorrect && focus(userNameRef)
+    isPhoneNumberCorrect = checkPhoneNumberCorrect(
+      phoneNumber,
+      setPhoneNumberError,
+    )
+
+    !isPhoneNumberCorrect && focus(phoneNumberRef)
+    !isUsernameCorrect && focus(userNameRef)
     !isNameCorrect && focus(nameRef)
     !isAddressCorrect && focus(addressRef)
     // !isPasswordConfirmCorrect && focus(passwordConfirmRef)
     !isPasswordCorrect && focus(passwordRef)
     !isAuthCodeCorrect && focus(authCodeRef)
     !isEmailCorrect && focus(emailRef)
+    console.log(isAddressCorrect)
+    //setAuthCodeError("")
+
+    if (
+      isPhoneNumberCorrect &&
+      isUsernameCorrect &&
+      isNameCorrect &&
+      isAddressCorrect &&
+      isPasswordCorrect &&
+      isAuthCodeCorrect &&
+      isEmailCorrect
+    ) {
+      handleSignUp(password, address, name, userName, phoneNumber)
+    }
   }
 
   // onpress auth code send
   // onpress auth code check
-  // onpress user name check
 
   return (
     <KeyboardAvoidingView
@@ -196,11 +252,21 @@ const SignUpScreen = (props: Props) => {
             />
             <Button
               title="인증번호 전송"
-              onPress={() => null}
+              onPress={handleSendEmailButtonPressed}
               variant="smallButton"
+              isLoading={checkingEmail}
+              style={{ minWidth: 97 }}
             />
           </View>
-          <FormInputError>{emailError}</FormInputError>
+          <FormInputError
+            style={
+              emailError === "이메일로 인증번호를 전송하였습니다"
+                ? { color: styleKit.colors.primary }
+                : {}
+            }
+          >
+            {emailError}
+          </FormInputError>
         </View>
         {/* Auth Number Form */}
         <View style={styles.signUpFormInputContainer}>
@@ -220,11 +286,20 @@ const SignUpScreen = (props: Props) => {
             />
             <Button
               title="인증번호 확인"
-              onPress={() => null}
+              onPress={handleConfirmAuthCodeButtonPressed}
               variant="smallButton"
+              isLoading={checkingAuthCode}
             />
           </View>
-          <FormInputError>{authCodeError}</FormInputError>
+          <FormInputError
+            style={
+              authCodeError === "인증번호 확인을 완료하였습니다"
+                ? { color: styleKit.colors.primary }
+                : {}
+            }
+          >
+            {authCodeError}
+          </FormInputError>
         </View>
         {/* Password Form */}
         <View style={styles.signUpFormInputContainer}>
@@ -305,11 +380,38 @@ const SignUpScreen = (props: Props) => {
             />
             <Button
               title="중복 확인"
-              onPress={() => null}
+              onPress={handleUserNameCheckButtonPressed}
               variant="smallButton"
+              isLoading={checkingUsername}
             />
           </View>
-          <FormInputError>{userNameError}</FormInputError>
+          <FormInputError
+            style={
+              usernameError === "사용할 수 있는 닉네임 입니다."
+                ? {
+                    color: styleKit.colors.green,
+                  }
+                : {}
+            }
+          >
+            {usernameError}
+          </FormInputError>
+        </View>
+        {/* Phone Number Form */}
+        <View style={styles.signUpFormInputContainer}>
+          <FormInputLabel style={styles.signUpFormInputLabel}>
+            *전화번호
+          </FormInputLabel>
+          <FormInput
+            value={phoneNumber}
+            onChangeText={(newPhoneNumber) => {
+              setPhoneNumber(newPhoneNumber)
+            }}
+            placeholder="전화번호를 입력하세요 (e.g. 01012345678)"
+            keyboardType="numeric"
+            ref={phoneNumberRef}
+          />
+          <FormInputError>{phoneNumberError}</FormInputError>
         </View>
         {/* Major Form */}
         <View style={styles.signUpFormInputContainer}>
@@ -324,21 +426,7 @@ const SignUpScreen = (props: Props) => {
             placeholder="학과를 입력하세요"
           />
         </View>
-        {/* Phone Number Form */}
-        <View style={styles.signUpFormInputContainer}>
-          <FormInputLabel style={styles.signUpFormInputLabel}>
-            전화번호
-          </FormInputLabel>
-          <FormInput
-            value={phoneNumber}
-            onChangeText={(newPhoneNumber) => {
-              setPhoneNumber(newPhoneNumber)
-            }}
-            placeholder="전화번호를 입력하세요"
-            keyboardType="numeric"
-          />
-          <FormInputError>{phoneNumberError}</FormInputError>
-        </View>
+
         {/* Sex Form */}
         <View style={styles.signUpFormInputContainer}>
           <FormInputLabel style={styles.signUpFormInputLabel}>
@@ -367,7 +455,11 @@ const SignUpScreen = (props: Props) => {
         </View>
 
         {/* Button */}
-        <Button title="순부름 시작하기" onPress={handleSignUpButtonPressed} />
+        <Button
+          title="순부름 시작하기"
+          onPress={handleSignUpButtonPressed}
+          isLoading={isLoading}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   )
