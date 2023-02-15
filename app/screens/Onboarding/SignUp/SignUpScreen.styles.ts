@@ -28,5 +28,5 @@ export default StyleSheet.create({
   },
   sexButtonCheckbox: {
     color: colors.brand,
-  }
+  },
 })

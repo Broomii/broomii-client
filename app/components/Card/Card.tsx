@@ -9,21 +9,31 @@ import styles from "./Card.styles"
 import { isAOS } from "../../utils/platform"
 
 type Props = {
+  title: string
+  location: string
+  price: number
   variant?: "pending" | "inProgress" | "done"
   stateButton?: boolean
   onPress?: () => void
 }
 
-const Card = ({ variant = "pending", onPress, stateButton = false }: Props) => {
+const Card = ({
+  title,
+  location,
+  price,
+  variant = "pending",
+  onPress,
+  stateButton = false,
+}: Props) => {
   const child = (
     <View style={styles.container}>
-      <Text style={styles.title(variant)}>삼각자 배달 원합니다</Text>
+      <Text style={styles.title(variant)}>{title}</Text>
       <View style={styleKit.layout.containerWithHorizontalFlex}>
         <Ionicons name="location-outline" style={styles.location(variant)} />
-        <Text style={styles.location(variant)}> 배달 장소: 향설 생활관 앞</Text>
+        <Text style={styles.location(variant)}> 배달 장소 : {location}</Text>
       </View>
       <View style={styleKit.layout.containerWithHorizontalFlex}>
-        <Text style={styles.tip(variant)}>배달팁: 2000원</Text>
+        <Text style={styles.tip(variant)}>배달팁 : {price}원</Text>
         {variant !== "pending" ? (
           <View style={styles.flagContainer(variant)}>
             <Text style={styles.flagText}>
