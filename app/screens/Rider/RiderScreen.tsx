@@ -1,72 +1,61 @@
 import { View, Text, FlatList } from "react-native"
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { useNavigation } from "@react-navigation/native"
+import { StackNavigationProp } from "@react-navigation/stack"
+import { useDispatch, useSelector } from "react-redux"
+import { PayloadAction } from "@reduxjs/toolkit"
+
+import {
+  fetchGigList,
+  filterGigs,
+  GigCellType,
+} from "../../redux/Rider/riderSlice"
+import { RootState, useAppDispatch } from "../../redux/store"
 
 import Card from "../../components/Card"
+import RiderListHeader from "./components/RiderListHeader/RiderListHeader"
+
+import { PublicStackParamList } from "../../navigation/Public/PublicScreensNavigator"
 
 type Props = {}
 
-type DeliveryItemType = {
-  id: number
-  title: string
-  deliveryAddress: string
-  deliveryPay: number
-}
-
-const data: DeliveryItemType[] = [
-  {
-    id: 1,
-    title: "test 1",
-    deliveryAddress: "test ad 1",
-    deliveryPay: 1000,
-  },
-  {
-    id: 2,
-    title: "test 2",
-    deliveryAddress: "test ad 2",
-    deliveryPay: 2000,
-  },
-  {
-    id: 3,
-    title: "test 3",
-    deliveryAddress: "test ad 3",
-    deliveryPay: 3000,
-  },
-  {
-    id: 4,
-    title: "test 4",
-    deliveryAddress: "test ad 4",
-    deliveryPay: 4000,
-  },
-  {
-    id: 5,
-    title: "test 5",
-    deliveryAddress: "test ad 5",
-    deliveryPay: 5000,
-  },
-  {
-    id: 6,
-    title: "test 6",
-    deliveryAddress: "test ad 6",
-    deliveryPay: 6000,
-  },
-  {
-    id: 7,
-    title: "test 7",
-    deliveryAddress: "test ad 7",
-    deliveryPay: 7000,
-  },
-]
-
+type RiderNavigationProp = StackNavigationProp<
+  PublicStackParamList,
+  "BottomTabBar"
+>
 const RiderScreen = (props: Props) => {
-  const renderItem = ({ item }: { item: DeliveryItemType }) => {
-    const { id, title, deliveryAddress, deliveryPay } = item
+  const navigation = useNavigation<RiderNavigationProp>()
+
+  const dispatch = useAppDispatch()
+  const {
+    gigList,
+    filteredGigList,
+    status: gigListStatus,
+    error: gigListError,
+  } = useSelector((state: RootState) => state.rider)
+
+  const [isEnabled, setIsEnabled] = useState(false)
+  const toggleSwitch = () => {
+    dispatch(filterGigs(isEnabled))
+    setIsEnabled((previousState: boolean) => !previousState)
+  }
+
+  useEffect(() => {
+    if (gigListStatus === "idle") {
+      dispatch(fetchGigList())
+    }
+  }, [dispatch, gigListStatus, gigList])
+
+  const renderItem = ({ item }: { item: GigCellType }) => {
+    const { id, title, deliveryAddress, deliveryPay, deliveryStatus } = item
     return (
       <Card
         title={title}
         location={deliveryAddress}
         price={deliveryPay}
+        variant={deliveryStatus}
         onPress={() => {
-          console.log(id)
+          navigation.navigate("Post", { id })
         }}
       />
     )
@@ -74,7 +63,16 @@ const RiderScreen = (props: Props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <FlatList data={data} renderItem={renderItem} />
+      <FlatList
+        data={filteredGigList}
+        renderItem={renderItem}
+        ListHeaderComponent={
+          <RiderListHeader
+            isSwitchOn={isEnabled}
+            onValueChange={toggleSwitch}
+          />
+        }
+      />
     </View>
   )
 }

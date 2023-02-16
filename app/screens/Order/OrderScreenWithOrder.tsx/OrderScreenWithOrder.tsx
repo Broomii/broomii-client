@@ -1,4 +1,4 @@
-import { View, Text } from "react-native"
+import { View, Text, ScrollView } from "react-native"
 import React from "react"
 import { StackNavigationProp } from "@react-navigation/stack"
 
@@ -10,18 +10,26 @@ import { FAB } from "../../../components/Button"
 import styles from "./OrderScreenWithOrder.styles"
 import { useNavigation } from "@react-navigation/native"
 
-
 type OrderScreenProp = StackNavigationProp<PublicStackParamList, "BottomTabBar">
 type Prop = {}
 const OrderScreenWithOrder = (props: Prop) => {
-  const navigation = useNavigation<OrderScreenProp>();
+  const navigation = useNavigation<OrderScreenProp>()
 
   return (
-    <View style={styles.orderScreenContainer}>
-      <Card variant="inProgress" onPress={() => navigation.navigate("Post")}/>
-      <Card variant="done" />
-      <FAB onPress={() => navigation.navigate("Editor")}/>
-    </View>
+    <>
+      <ScrollView style={styles.orderScreenContainer}>
+        <Card
+          title="ssadfsadf"
+          variant="inProgress"
+          onPress={() => navigation.navigate("Post")}
+        />
+        <Card variant="done" />
+        <Card variant="done" />
+        <Card variant="done" />
+        <Card variant="done" />
+      </ScrollView>
+      <FAB onPress={() => navigation.navigate("Editor")} />
+    </>
   )
 }
 

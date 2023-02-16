@@ -26,6 +26,11 @@ export default StyleSheet.create({
   shopName: {
     fontSize: styleKit.font.FontSize.Secondary,
     fontFamily: styleKit.font.FontWeight.Regular,
+    marginBottom: styleKit.spacing.xs,
+  },
+  totalPrice: {
+    fontSize: styleKit.font.FontSize.Secondary,
+    fontFamily: styleKit.font.FontWeight.Regular,
   },
   contentCotainer: {
     paddingVertical: styleKit.spacing.lg,

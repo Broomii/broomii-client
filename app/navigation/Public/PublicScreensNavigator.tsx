@@ -20,7 +20,7 @@ import { styleKit } from "../../style"
 export type PublicStackParamList = {
   BottomTabBar: undefined
   Editor: undefined
-  Post: undefined
+  Post: { id: number }
   ChattingScreens: undefined
 }
 

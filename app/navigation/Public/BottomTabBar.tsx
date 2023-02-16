@@ -19,7 +19,7 @@ import HomeTopTabBar from "./Home"
 import { ChattingScreen } from "../../screens/Chatting"
 import SettingsScreen from "../../screens/Settings/SettingsScreen"
 
-type BottomTabParamList = {
+export type BottomTabParamList = {
   Home: undefined
   Chatting: undefined
   Settings: undefined
