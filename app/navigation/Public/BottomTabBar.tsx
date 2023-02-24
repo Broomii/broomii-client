@@ -18,6 +18,7 @@ import HomeTopTabBar from "./Home"
 
 import { ChattingScreen } from "../../screens/Chatting"
 import SettingsScreen from "../../screens/Settings/SettingsScreen"
+import RiderScreen from "../../screens/Rider/RiderScreen"
 
 export type BottomTabParamList = {
   Home: undefined
@@ -87,7 +88,7 @@ const BottomTabBar = () => {
       >
         <BottomTab.Screen
           name="Home"
-          component={HomeTopTabBar}
+          component={RiderScreen}
           options={{
             headerTitle: () => <Logo />,
             headerStyle: {

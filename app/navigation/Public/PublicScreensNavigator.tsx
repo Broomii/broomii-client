@@ -9,9 +9,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import BottomTabBar from "./BottomTabBar"
 import ChattingScreens from "./ChattingScreens"
 import SettingsScreens from "./SettingsScreens"
-import EditorScreen from "../../screens/Order/Editor/EditorScreen"
+import EditorScreen from "../../screens/Post/Editor/EditorScreen"
 import PostScreen from "../../screens/Post/PostScreen"
-import { HeaderRightButton } from "../../components/Button"
+import { HeaderRightCompleteButton } from "../../components/Button"
 
 import defaultHeaderOptions from "../defaultHeaderOptions"
 
@@ -42,16 +42,7 @@ const PublicScreensNavigator = () => {
         component={BottomTabBar}
         options={{ headerShown: false }}
       />
-      <Public.Screen
-        name="Editor"
-        component={EditorScreen}
-        options={{
-          headerTitle: "주문서 작성하기",
-          headerBackTitle: "Back",
-          headerRight: () => <HeaderRightButton />,
-        }}
-      />
-      <Public.Screen
+        <Public.Screen
         name="Post"
         component={PostScreen}
         options={{
@@ -59,6 +50,16 @@ const PublicScreensNavigator = () => {
           headerBackTitle: "Back",
         }}
       />
+      <Public.Screen
+        name="Editor"
+        component={EditorScreen}
+        options={{
+          headerTitle: "주문서 작성하기",
+          headerBackTitle: "Back",
+          headerRight: () => <HeaderRightCompleteButton title="완료" />,
+        }}
+      />
+    
       <Public.Screen
         name="ChattingScreens"
         component={ChattingScreens}

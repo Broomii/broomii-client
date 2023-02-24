@@ -7,7 +7,7 @@ import { styleKit } from "../../style"
 import styles from "./Profile.styles"
 
 type ProfileProps = {
-  username: string
+  username: string | undefined
 }
 
 const Profile = ({ username }: ProfileProps) => {

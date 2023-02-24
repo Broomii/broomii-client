@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import axios from "axios"
 
-import { TEST_URL } from "../../config"
+import { BASE_URL } from "../../config"
 
 export type GigCellType = {
   id: number
@@ -30,46 +30,51 @@ const transformDeliveryStatus = (
   }
 }
 
-export const fetchGigList = createAsyncThunk("rider/fetchGigList", async () => {
-  const result = await axios
-    .get(`${TEST_URL}/orders`)
-    .then((res) => {
-      const data = res.data.data
-      return data
-    })
-    .then((data) => {
-      const newData = data.map((gig) => {
-        const id = gig.id
-        const attr = gig.attributes
-
-        const deliveryStatus: "pending" | "inProgress" | "done" =
-          transformDeliveryStatus(attr.deliveryStatus)
-
-        const newGig: GigCellType = {
-          id,
-          title: attr.title,
-          deliveryAddress: attr.deliveryAddress,
-          deliveryPay: attr.deliveryPay,
-          deliveryStatus,
-        }
-
-        return newGig
+export const fetchGigList = createAsyncThunk(
+  "rider/fetchGigList",
+  async (jwt: string, thunkApi) => {
+    const result = await axios
+      .get(`${BASE_URL}/orders/getOrderList`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
       })
-      return newData
-    })
-    .catch((e) => {
-      console.log(e)
-    })
+      .then((res) => {
+        const data = res.data.data
 
-  // console.log(result)
-  return result
-})
+        const newData = data.map((gig: any) => {
+          const { id, title, deliveryAddress, deliveryPay, deliveryStatus } =
+            gig
+          const transformedDeliveryStatus: "pending" | "inProgress" | "done" =
+            transformDeliveryStatus(deliveryStatus)
+
+          const newGig: GigCellType = {
+            id,
+            title,
+            deliveryAddress,
+            deliveryPay,
+            deliveryStatus: transformedDeliveryStatus,
+          }
+          return newGig
+        }) // map
+        
+        return newData
+      })
+      .catch((e) => {
+        console.log(e)
+        return thunkApi.rejectWithValue([])
+      })
+
+    return result
+  },
+)
 
 type riderStateType = {
   gigList: GigCellType[]
   filteredGigList: GigCellType[]
   status: "idle" | "pending" | "succeeded" | "failed"
   error: string | null
+  shouldRefetch: boolean
 }
 
 const initialState: riderStateType = {
@@ -77,6 +82,7 @@ const initialState: riderStateType = {
   filteredGigList: [],
   status: "idle",
   error: null,
+  shouldRefetch: false,
 }
 
 export const riderSlice = createSlice({
@@ -90,6 +96,9 @@ export const riderSlice = createSlice({
         ? gigList.filter((gig) => gig.deliveryStatus === "pending")
         : gigList
     },
+    notifyToRefetch(state) {
+      state.shouldRefetch = true
+    },
   },
   extraReducers(builder) {
     builder
@@ -99,16 +108,20 @@ export const riderSlice = createSlice({
       .addCase(fetchGigList.fulfilled, (state, action) => {
         state.status = "succeeded"
         const newGigs = action.payload
-
-        state.gigList = state.gigList.concat(newGigs)
+        // console.log(newGigs)
+        state.gigList = newGigs
         state.filteredGigList = state.gigList
+        state.shouldRefetch = false
+        console.log("hit")
       })
       .addCase(fetchGigList.rejected, (state, action) => {
         state.status = "failed"
+        console.log("failed")
+        state.shouldRefetch = false
       })
   },
 })
 
-export const { filterGigs } = riderSlice.actions
+export const { filterGigs, notifyToRefetch } = riderSlice.actions
 
 export default riderSlice.reducer

@@ -1,62 +1,86 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import axios from "axios"
 
-import { TEST_URL } from "../../config"
+import { BASE_URL } from "../../config"
 
 export type PostType = {
-  id: number
+  id?: number
   title: string
   deliveryAddress: string
-  nickName: string
+  nickName?: string
   storeName: string
   totalPrice: number
   deliveryPay: number
-  deliveryStatus: "pending" | "inProgress" | "done"
+  deliveryStatus?: "pending" | "inProgress" | "done"
   requirement: string
+  flag?: number
 }
 
 export const fetchSinglePost = createAsyncThunk(
   "singlePost/fetchSinglePost",
-  async (id: number) => {
+  async (data: { id: number; jwt: string }, { rejectWithValue }) => {
+    // console.log(data.id, data.jwt)
     const result = axios
-      .get(`${TEST_URL}/orders/${id}`)
+      .get(`${BASE_URL}/orders/get/${data.id}`, {
+        headers: {
+          Authorization: `Bearer ${data.jwt}`,
+        },
+      })
+      .then((res) => {
+        const typedData: PostType = res.data.data
+        return typedData
+      })
+      .catch((e) => {
+        console.log(e)
+        rejectWithValue({})
+      })
+
+    return result
+  },
+)
+
+export const createSinglePost = createAsyncThunk(
+  "singlePost/createSinglePost",
+  async ({ jwt, post }: { jwt: string; post: PostType }, thunkApi) => {
+    console.log(post)
+    console.log(jwt)
+    const result = axios
+      .post(`${BASE_URL}/orders/create`, post, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      })
       .then((res) => {
         const data = res.data.data
         return data
       })
-      .then((data) => {
-        const id = data.id
-        const attr = data.attributes
+      .catch((e) => {
+        console.log(e)
+        return thunkApi.rejectWithValue(0)
+      })
 
-        const {
-          title,
-          deliveryAddress,
-          nickName,
-          storeName,
-          totalPrice,
-          deliveryPay,
-          deliveryStatus,
-          requirement,
-        } = attr
+    return result
+  },
+)
 
-        const singlePostData: PostType = {
-          id,
-          title,
-          deliveryAddress,
-          nickName,
-          storeName,
-          totalPrice,
-          deliveryPay,
-          deliveryStatus,
-          requirement,
-        }
-        console.log(singlePostData)
-        return singlePostData
+export const fetchDefaultAddress = createAsyncThunk(
+  "singlePost/fetchDefaultAddress",
+  async (jwt: string, { rejectWithValue }) => {
+    const result = axios
+      .get(`${BASE_URL}/members/getDefaultAddress`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      })
+      .then((res) => {
+        const address: string = res.data.data
+        return address
       })
       .catch((e) => {
         console.log(e)
+        return rejectWithValue("")
       })
-      
+
     return result
   },
 )
@@ -64,6 +88,7 @@ export const fetchSinglePost = createAsyncThunk(
 type postStateType = {
   post: PostType
   status: "idle" | "pending" | "succeeded" | "failed"
+  // defaultAddress: string
   error: string | null
 }
 
@@ -78,7 +103,9 @@ const initialState: postStateType = {
     deliveryPay: 0,
     deliveryStatus: "pending",
     requirement: "",
+    flag: 0,
   },
+  // defaultAddress: "",
   status: "idle",
   error: null,
 }
@@ -86,11 +113,7 @@ const initialState: postStateType = {
 export const postSlice = createSlice({
   name: "post",
   initialState,
-  reducers: {
-    setBackStatus(state) {
-      state.status = "idle"
-    },
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       .addCase(fetchSinglePost.pending, (state, action) => {
@@ -105,9 +128,29 @@ export const postSlice = createSlice({
       .addCase(fetchSinglePost.rejected, (state, action) => {
         state.status = "failed"
       })
+      .addCase(createSinglePost.pending, (state, action) => {
+        state.status = "pending"
+      })
+      .addCase(createSinglePost.fulfilled, (state, action) => {
+        state.status = "succeeded"
+      })
+      .addCase(createSinglePost.rejected, (state, action) => {
+        state.status = "failed"
+      })
+      .addCase(fetchDefaultAddress.pending, (state) => {
+        state.status = "pending"
+      })
+      .addCase(fetchDefaultAddress.fulfilled, (state, action) => {
+        state.status = "succeeded"
+        console.log("payload: " + action.payload)
+        // state.defaultAddress = action.payload as unknown as string
+      })
+      .addCase(fetchDefaultAddress.rejected, (state) => {
+        state.status = "failed"
+      })
   },
 })
 
-export const { setBackStatus } = postSlice.actions
+// export const { setBackStatus } = postSlice.actions
 
 export default postSlice.reducer

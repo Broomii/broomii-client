@@ -5,6 +5,7 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { useDispatch, useSelector } from "react-redux"
 import { PayloadAction } from "@reduxjs/toolkit"
 
+
 import {
   fetchGigList,
   filterGigs,
@@ -16,6 +17,9 @@ import Card from "../../components/Card"
 import RiderListHeader from "./components/RiderListHeader/RiderListHeader"
 
 import { PublicStackParamList } from "../../navigation/Public/PublicScreensNavigator"
+import { FAB } from "../../components/Button"
+
+import { getJWT } from "../../utils/secureStore/secureStore"
 
 type Props = {}
 
@@ -32,6 +36,7 @@ const RiderScreen = (props: Props) => {
     filteredGigList,
     status: gigListStatus,
     error: gigListError,
+    shouldRefetch,
   } = useSelector((state: RootState) => state.rider)
 
   const [isEnabled, setIsEnabled] = useState(false)
@@ -41,12 +46,23 @@ const RiderScreen = (props: Props) => {
   }
 
   useEffect(() => {
-    if (gigListStatus === "idle") {
-      dispatch(fetchGigList())
+    console.log("rider screen hit")
+    if (gigListStatus === "idle" || shouldRefetch) {
+      getJWT((jwt) => dispatch(fetchGigList(jwt)))
     }
   }, [dispatch, gigListStatus, gigList])
 
-  const renderItem = ({ item }: { item: GigCellType }) => {
+  const renderItem = ({
+    item = {
+      id: 1,
+      title: "title",
+      deliveryAddress: "",
+      deliveryPay: 0,
+      deliveryStatus: "done",
+    },
+  }: {
+    item: GigCellType
+  }) => {
     const { id, title, deliveryAddress, deliveryPay, deliveryStatus } = item
     return (
       <Card
@@ -62,18 +78,21 @@ const RiderScreen = (props: Props) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        data={filteredGigList}
-        renderItem={renderItem}
-        ListHeaderComponent={
-          <RiderListHeader
-            isSwitchOn={isEnabled}
-            onValueChange={toggleSwitch}
-          />
-        }
-      />
-    </View>
+    <>
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={filteredGigList}
+          renderItem={renderItem}
+          ListHeaderComponent={
+            <RiderListHeader
+              isSwitchOn={isEnabled}
+              onValueChange={toggleSwitch}
+            />
+          }
+        />
+      </View>
+      <FAB onPress={() => navigation.navigate("Editor")} />
+    </>
   )
 }
 

@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       .then((res) => {
         const data: LoginResponseDataType = res.data.data
         const token = data.accessToken
-
+        console.log(token)
         setUserToken(token)
         if (token) {
           SecureStore.setItemAsync("userToken", token)
@@ -191,6 +191,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let result = await SecureStore.getItemAsync("userToken");
     if (result) {
       alert("🔐 Here's your value 🔐 \n" + result);
+      console.log(result)
     } else {
       alert('No values stored under that key.');
     }
@@ -230,7 +231,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.log(res.data)
         const data = res.data.data
         const token = data.accessToken
-
+        
         setUserToken(token)
         if (token) {
           SecureStore.setItemAsync("userToken", token)

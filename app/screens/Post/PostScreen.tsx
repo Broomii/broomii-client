@@ -16,7 +16,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { BottomTabParamList } from "../../navigation/Public/BottomTabBar"
 
 import { useAppDispatch, RootState } from "../../redux/store"
-import { fetchSinglePost, PostType, setBackStatus } from "../../redux/Post/postSlice"
+import { fetchSinglePost, PostType } from "../../redux/Post/postSlice"
+import { getJWT } from "../../utils/secureStore/secureStore"
 
 type PostNavigationProp = BottomTabNavigationProp<
   BottomTabParamList,
@@ -48,16 +49,27 @@ const PostScreen = ({ route }: PostScreenProps) => {
     totalPrice,
     deliveryPay,
     deliveryStatus,
+    flag,
     requirement,
   }: PostType = post
 
   const handleGoToChatting = () => {
     navigation.navigate("Chatting")
   }
-  
+
   useEffect(() => {
-    dispatch(fetchSinglePost(id))
+    getJWT((jwt) => dispatch(fetchSinglePost({ id, jwt })))
   }, [id])
+
+  useEffect(() => {
+    // if (flag) {
+    //   navigation.setOptions({
+    //     headerRight: () => ()
+    //   })
+    // } else {
+
+    // }
+  }, [])
 
   return (
     <>

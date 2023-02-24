@@ -10,6 +10,7 @@ interface EditorInputProps extends TextInputProps {
   variant?: "default" | "withButton" | "multiline"
   inputStyle?: ViewStyle
   outerContainerStyle?: ViewStyle
+  onButtonPress?: () => void
 }
 
 const EditorInput = ({
@@ -18,6 +19,10 @@ const EditorInput = ({
   scrollEnabled,
   inputStyle,
   outerContainerStyle,
+  keyboardType,
+  value,
+  onChangeText,
+  onButtonPress,
 }: EditorInputProps) => {
   return (
     <>
@@ -25,14 +30,17 @@ const EditorInput = ({
         <TextInput
           style={[styles.inputBox(variant), inputStyle]}
           placeholder={placeholder}
+          value={value}
+          onChangeText={onChangeText}
           multiline={variant === "multiline"}
           scrollEnabled={scrollEnabled}
+          keyboardType={keyboardType}
         />
         {variant === "withButton" ? (
           <Button
             title="기본 주소 불러오기"
             variant="smallButton"
-            onPress={() => null}
+            onPress={onButtonPress}
           />
         ) : null}
       </View>

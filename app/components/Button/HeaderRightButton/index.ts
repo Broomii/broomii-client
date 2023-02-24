@@ -1,1 +1,3 @@
-export { default } from "./HeaderRightButton"
+import HeaderRightCompleteButton from "./HeaderRightCompleteButton"
+
+export { HeaderRightCompleteButton }
