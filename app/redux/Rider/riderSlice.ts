@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import axios from "axios"
+import { transformDeliveryStatus } from "../../utils/converters"
 
 import { BASE_URL } from "../../config"
 
@@ -15,20 +16,7 @@ export type GigCellType = {
   // requirement: string
 }
 
-const transformDeliveryStatus = (
-  status: "deliverable" | "inDelivery" | "deliveryComplete",
-): "pending" | "inProgress" | "done" => {
-  switch (status) {
-    case "deliverable":
-      return "pending"
-    case "inDelivery":
-      return "inProgress"
-    case "deliveryComplete":
-      return "done"
-    default:
-      return "pending"
-  }
-}
+
 
 export const fetchGigList = createAsyncThunk(
   "rider/fetchGigList",

@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import axios from "axios"
 
 import { BASE_URL } from "../../config"
+import { transformDeliveryStatus } from "../../utils/converters"
 
 export type PostType = {
   id?: number
@@ -18,16 +19,25 @@ export type PostType = {
 
 export const fetchSinglePost = createAsyncThunk(
   "singlePost/fetchSinglePost",
-  async (data: { id: number; jwt: string }, { rejectWithValue }) => {
-    // console.log(data.id, data.jwt)
+  async ({ id, jwt }: { id: number; jwt: string }, { rejectWithValue }) => {
+    // console.log(id, jwt)
     const result = axios
-      .get(`${BASE_URL}/orders/get/${data.id}`, {
+      .get(`${BASE_URL}/orders/get/${id}`, {
         headers: {
-          Authorization: `Bearer ${data.jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
       })
       .then((res) => {
-        const typedData: PostType = res.data.data
+        const data = res.data.data
+        const transformedDeliveryStatus = transformDeliveryStatus(
+          data.deliveryStatus,
+        )
+        const typedData: PostType = {
+          ...data,
+          deliveryStatus: transformedDeliveryStatus,
+          id,
+        }
+        // console.log(typedData)
         return typedData
       })
       .catch((e) => {
@@ -42,8 +52,8 @@ export const fetchSinglePost = createAsyncThunk(
 export const createSinglePost = createAsyncThunk(
   "singlePost/createSinglePost",
   async ({ jwt, post }: { jwt: string; post: PostType }, thunkApi) => {
-    console.log(post)
-    console.log(jwt)
+    // console.log(post)
+    // console.log(jwt)
     const result = axios
       .post(`${BASE_URL}/orders/create`, post, {
         headers: {
@@ -85,6 +95,97 @@ export const fetchDefaultAddress = createAsyncThunk(
   },
 )
 
+export const deleteSinglePost = createAsyncThunk(
+  "singlePost/deleteSinglePost",
+  async ({ jwt, id }: { jwt: string; id: number }, { rejectWithValue }) => {
+    const result = axios
+      .delete(`${BASE_URL}/orders/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      })
+      .then(() => {
+        console.log("success")
+        return true
+      })
+      .catch((e) => {
+        console.log(e)
+        return rejectWithValue(false)
+      })
+
+    return result
+  },
+)
+
+export const editSinglePost = createAsyncThunk(
+  "singlePost/editSinglePost",
+  async ({ jwt, post }: { jwt: string; post: PostType }, thunkApi) => {
+    console.log("createThunk")
+    console.log(post)
+    console.log(jwt)
+    const result = axios
+      .put(`${BASE_URL}/orders/edit`, post, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      })
+      .then((res) => {
+        const data = res.data.data
+        console.log("then")
+        console.log(data)
+        return data
+      })
+      .catch((e) => {
+        console.log(e)
+        return thunkApi.rejectWithValue(0)
+      })
+
+    return result
+  },
+)
+
+export const changeDeliveryStatus = createAsyncThunk(
+  "singlePost/changeDeliveryStatus",
+
+  async (
+    {
+      jwt,
+      id,
+      status,
+    }: { jwt: string; id: number; status: "pending" | "inProgress" | "done" },
+    thunkApi,
+  ) => {
+    const result = axios
+      .put(
+        `${BASE_URL}/orders/editDeliveryStatus`,
+        {
+          id,
+          deliveryStatus:
+            status === "pending"
+              ? "deliverable"
+              : status === "inProgress"
+              ? "inDelivery"
+              : "deliveryComplete",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        },
+      )
+      .then((res) => {
+        const data = res.data.data
+        return data
+      })
+      .catch((e) => {
+        console.log(e)
+        return thunkApi.rejectWithValue(0)
+      })
+
+    return status
+  },
+)
+
 type postStateType = {
   post: PostType
   status: "idle" | "pending" | "succeeded" | "failed"
@@ -105,7 +206,6 @@ const initialState: postStateType = {
     requirement: "",
     flag: 0,
   },
-  // defaultAddress: "",
   status: "idle",
   error: null,
 }
@@ -146,6 +246,39 @@ export const postSlice = createSlice({
         // state.defaultAddress = action.payload as unknown as string
       })
       .addCase(fetchDefaultAddress.rejected, (state) => {
+        state.status = "failed"
+      })
+      .addCase(deleteSinglePost.pending, (state) => {
+        state.status = "pending"
+      })
+      .addCase(deleteSinglePost.fulfilled, (state) => {
+        state.status = "succeeded"
+      })
+      .addCase(deleteSinglePost.rejected, (state) => {
+        state.status = "failed"
+      })
+      .addCase(editSinglePost.pending, (state) => {
+        state.status = "pending"
+      })
+      .addCase(editSinglePost.fulfilled, (state) => {
+        state.status = "succeeded"
+      })
+      .addCase(editSinglePost.rejected, (state) => {
+        state.status = "failed"
+      })
+      .addCase(changeDeliveryStatus.pending, (state) => {
+        state.status = "pending"
+      })
+      .addCase(changeDeliveryStatus.fulfilled, (state, action) => {
+        state.status = "succeeded"
+        const status = action.payload as unknown as
+          | "pending"
+          | "inProgress"
+          | "done"
+
+        state.post.deliveryStatus = status
+      })
+      .addCase(changeDeliveryStatus.rejected, (state) => {
         state.status = "failed"
       })
   },

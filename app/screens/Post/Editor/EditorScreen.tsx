@@ -1,7 +1,7 @@
 import { View, Text, Alert } from "react-native"
 import React, { useState, useEffect } from "react"
 import { StackNavigationProp } from "@react-navigation/stack"
-import { useNavigation } from "@react-navigation/native"
+import { RouteProp, useNavigation } from "@react-navigation/native"
 import { useSelector } from "react-redux"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
@@ -18,6 +18,7 @@ import {
   createSinglePost,
   PostType,
   fetchDefaultAddress,
+  editSinglePost,
 } from "../../../redux/Post/postSlice"
 import { getJWT } from "../../../utils/secureStore/secureStore"
 import { notifyToRefetch } from "../../../redux/Rider/riderSlice"
@@ -27,10 +28,13 @@ type EditorScreenNavigationProp = StackNavigationProp<
   "Editor"
 >
 
-type Props = {}
+type EditorProps = {
+  route: RouteProp<{ params: { postToEdit: PostType } }, "params">
+}
 
-const EditorScreen = (props: Props) => {
-  const { defaultAddress } = useSelector((state: RootState) => state.post)
+const EditorScreen = ({ route }: EditorProps) => {
+  const { postToEdit } = route.params
+
   const dispatch = useAppDispatch()
 
   const navigation = useNavigation<EditorScreenNavigationProp>()
@@ -77,7 +81,7 @@ const EditorScreen = (props: Props) => {
       !isTipEmpty &&
       isTipGreaterThantOrEqaulToThousand
     ) {
-      const postToCreate: PostType = {
+      const postToUpload: PostType = {
         title,
         storeName,
         deliveryAddress: address,
@@ -86,8 +90,22 @@ const EditorScreen = (props: Props) => {
         requirement: requirements,
       }
 
+      const actionToPerform = (isEditMode: boolean, jwt: string) => {
+        if (isEditMode) {
+          const editedPost = { ...postToUpload, id: postToEdit.id }
+          return editSinglePost({ jwt, post: editedPost })
+        } else {
+          return createSinglePost({ jwt, post: postToUpload })
+        }
+      }
+
+      const isEditMode = postToEdit !== null
+
       getJWT((jwt) =>
-        dispatch(createSinglePost({ jwt, post: postToCreate }))
+        dispatch(
+          // createSinglePost({ jwt, post: postToCreate })
+          actionToPerform(isEditMode, jwt),
+        )
           .unwrap()
           .then((id) => {
             dispatch(notifyToRefetch())
@@ -117,8 +135,21 @@ const EditorScreen = (props: Props) => {
     }
   }
 
+  const fillEditorWithPost = () => {
+    setTitle(postToEdit.title)
+    setStoreName(postToEdit.storeName)
+    setAddress(postToEdit.deliveryAddress)
+    setTotalPrice(`${postToEdit.totalPrice}`)
+    setTip(`${postToEdit.deliveryPay}`)
+    setRequirments(postToEdit.requirement)
+  }
+
   useEffect(() => {
-    getAddress()
+    if (postToEdit == null) {
+      getAddress()
+    } else {
+      fillEditorWithPost()
+    }
   }, [])
 
   useEffect(() => {

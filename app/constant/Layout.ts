@@ -1,6 +1,6 @@
 import { Dimensions } from "react-native"
 
-const width = Dimensions.get("window").width
+const screenWidth = Dimensions.get("window").width
 
 const spacing = {
   xs: 4,
@@ -11,6 +11,6 @@ const spacing = {
 }
 const paddingHorizontal = spacing.md
 
-const isSmallDevice = width < 375
+const isSmallDevice = screenWidth < 375
 
 export { isSmallDevice, paddingHorizontal, spacing }

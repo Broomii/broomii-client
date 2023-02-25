@@ -31,6 +31,7 @@ export default StyleSheet.create({
   totalPrice: {
     fontSize: styleKit.font.FontSize.Secondary,
     fontFamily: styleKit.font.FontWeight.Regular,
+    marginBottom: styleKit.spacing.md,
   },
   contentCotainer: {
     paddingVertical: styleKit.spacing.lg,

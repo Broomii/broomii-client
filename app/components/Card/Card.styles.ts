@@ -12,7 +12,7 @@ interface CardStyle {
   stateButtonContainer: ViewStyle
 }
 
-export default StyleSheet.create<CardStyle>({
+export default StyleSheet.create<CardStyle | any>({
   container: {
     backgroundColor: styleKit.colors.primaryInvert,
     borderBottomWidth: 0.2,

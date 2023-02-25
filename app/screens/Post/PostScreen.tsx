@@ -1,13 +1,19 @@
-import { View, ScrollView } from "react-native"
+import { View, ScrollView, Animated } from "react-native"
 import React, { useEffect, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { RouteProp, useNavigation } from "@react-navigation/native"
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs"
 import { useSelector } from "react-redux"
+import axios from "axios"
 
 import Text from "../../components/Text"
-import { Button } from "../../components/Button"
+import {
+  Button,
+  HeaderRightMenuButton,
+  StateButton,
+} from "../../components/Button"
 import Profile from "../../components/Profile"
+import OverlayMenu from "../../components/OverlayMenu"
 
 import { styleKit } from "../../style"
 import styles from "./PostScreen.styles"
@@ -16,13 +22,21 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { BottomTabParamList } from "../../navigation/Public/BottomTabBar"
 
 import { useAppDispatch, RootState } from "../../redux/store"
-import { fetchSinglePost, PostType } from "../../redux/Post/postSlice"
-import { getJWT } from "../../utils/secureStore/secureStore"
+import {
+  fetchSinglePost,
+  PostType,
+  deleteSinglePost,
+  changeDeliveryStatus,
+} from "../../redux/Post/postSlice"
+import { notifyToRefetch } from "../../redux/Rider/riderSlice"
 
-type PostNavigationProp = BottomTabNavigationProp<
-  BottomTabParamList,
-  "Chatting"
->
+import { getJWT } from "../../utils/secureStore/secureStore"
+import { StackNavigationProp } from "@react-navigation/stack"
+import { PublicStackParamList } from "../../navigation/Public/PublicScreensNavigator"
+
+type TabNavigationProp = BottomTabNavigationProp<BottomTabParamList, "Home">
+
+type NavigateToEditorProp = StackNavigationProp<PublicStackParamList, "Editor">
 
 type PostScreenProps = {
   route: RouteProp<{ params: { id: number } }, "params">
@@ -32,7 +46,8 @@ const PostScreen = ({ route }: PostScreenProps) => {
   const { id } = route.params
   const BOTTOM_INSET: number = useSafeAreaInsets().bottom
 
-  const navigation = useNavigation<PostNavigationProp>()
+  const navigation = useNavigation<TabNavigationProp>()
+  const editorNavigation = useNavigation<NavigateToEditorProp>()
 
   const dispatch = useAppDispatch()
   const {
@@ -53,8 +68,61 @@ const PostScreen = ({ route }: PostScreenProps) => {
     requirement,
   }: PostType = post
 
+  const [postActionOverlayVisible, setPostActionOverlayVisible] =
+    useState(false)
+
+  const [stateActionOverlayVisible, setStateActionOverlayVisible] =
+    useState(false)
+
+  const togglePostActionOverlay = () => {
+    setPostActionOverlayVisible(!postActionOverlayVisible)
+  }
+
+  const toggleStateActionOverlay = () => {
+    setStateActionOverlayVisible(!stateActionOverlayVisible)
+  }
+
   const handleGoToChatting = () => {
     navigation.navigate("Chatting")
+  }
+
+  const handleEditPressed = () => {
+    setPostActionOverlayVisible(false)
+    editorNavigation.navigate("Editor", { postToEdit: post })
+  }
+
+  const handleDeletePressed = () => {
+    getJWT((jwt) =>
+      dispatch(deleteSinglePost({ jwt, id }))
+        .unwrap()
+        .then((succeeded) => {
+          if (succeeded) {
+            dispatch(notifyToRefetch())
+            setPostActionOverlayVisible(false)
+            navigation.navigate("Home")
+          }
+        }),
+    )
+  }
+
+  const handleChangeStatusTo = (status: "pending" | "inProgress" | "done") => {
+    if (status !== post.deliveryStatus) {
+      return () => {
+ 
+        getJWT((jwt) =>
+          dispatch(
+            changeDeliveryStatus({
+              jwt,
+              id: post.id as number,
+              status,
+            }),
+          ).then(() => {
+            setStateActionOverlayVisible(false)
+            dispatch(notifyToRefetch())
+          }),
+        )
+      }
+    }
   }
 
   useEffect(() => {
@@ -62,14 +130,15 @@ const PostScreen = ({ route }: PostScreenProps) => {
   }, [id])
 
   useEffect(() => {
-    // if (flag) {
-    //   navigation.setOptions({
-    //     headerRight: () => ()
-    //   })
-    // } else {
-
-    // }
-  }, [])
+    if (flag) {
+      navigation.setOptions({
+        headerRight: () => (
+          <HeaderRightMenuButton onPress={togglePostActionOverlay} />
+        ),
+      })
+    } else {
+    }
+  }, [postActionOverlayVisible, flag])
 
   return (
     <>
@@ -83,6 +152,14 @@ const PostScreen = ({ route }: PostScreenProps) => {
             <Text style={styles.time}>20분 전</Text>
             <Text style={styles.shopName}>매장명 : {storeName}</Text>
             <Text style={styles.totalPrice}>주문 금액 : {totalPrice}원</Text>
+            {flag === 1 ? (
+              <StateButton
+                status={deliveryStatus as "pending" | "inProgress" | "done"}
+                onPress={toggleStateActionOverlay}
+              />
+            ) : (
+              <></>
+            )}
           </View>
           {/* Content Section */}
           <View style={styles.contentCotainer}>
@@ -113,6 +190,33 @@ const PostScreen = ({ route }: PostScreenProps) => {
           title="진행 중인 채팅 보기"
           variant="smallButton"
           onPress={handleGoToChatting}
+        />
+        <OverlayMenu
+          menuList={[
+            { menuName: "수정하기", menuAction: handleEditPressed },
+            { menuName: "삭제하기", menuAction: handleDeletePressed },
+          ]}
+          onBackDropPress={togglePostActionOverlay}
+          isVisible={postActionOverlayVisible}
+        />
+        <OverlayMenu
+          menuList={[
+            {
+              menuName: "대기 중",
+              menuAction: handleChangeStatusTo("pending") as () => void,
+            },
+            {
+              menuName: "배달 중",
+              menuAction: handleChangeStatusTo("inProgress") as () => void,
+            },
+            {
+              menuName: "배달 완료",
+              menuAction: handleChangeStatusTo("done") as () => void,
+            },
+          ]}
+          onBackDropPress={toggleStateActionOverlay}
+          isVisible={stateActionOverlayVisible}
+          containerStyle={{ paddingBottom: BOTTOM_INSET / 2 }}
         />
       </View>
     </>

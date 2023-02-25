@@ -5,7 +5,6 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { useDispatch, useSelector } from "react-redux"
 import { PayloadAction } from "@reduxjs/toolkit"
 
-
 import {
   fetchGigList,
   filterGigs,
@@ -50,7 +49,7 @@ const RiderScreen = (props: Props) => {
     if (gigListStatus === "idle" || shouldRefetch) {
       getJWT((jwt) => dispatch(fetchGigList(jwt)))
     }
-  }, [dispatch, gigListStatus, gigList])
+  }, [dispatch, gigListStatus, gigList, shouldRefetch])
 
   const renderItem = ({
     item = {
@@ -91,7 +90,9 @@ const RiderScreen = (props: Props) => {
           }
         />
       </View>
-      <FAB onPress={() => navigation.navigate("Editor")} />
+      <FAB
+        onPress={() => navigation.navigate("Editor", { postToEdit: null })}
+      />
     </>
   )
 }

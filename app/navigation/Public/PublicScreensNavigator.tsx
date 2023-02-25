@@ -11,15 +11,19 @@ import ChattingScreens from "./ChattingScreens"
 import SettingsScreens from "./SettingsScreens"
 import EditorScreen from "../../screens/Post/Editor/EditorScreen"
 import PostScreen from "../../screens/Post/PostScreen"
-import { HeaderRightCompleteButton } from "../../components/Button"
+import {
+  HeaderRightCompleteButton,
+  HeaderRightMenuButton,
+} from "../../components/Button"
 
 import defaultHeaderOptions from "../defaultHeaderOptions"
 
 import { styleKit } from "../../style"
+import { PostType } from "../../redux/Post/postSlice"
 
 export type PublicStackParamList = {
   BottomTabBar: undefined
-  Editor: undefined
+  Editor: { postToEdit: null | PostType }
   Post: { id: number }
   ChattingScreens: undefined
 }
@@ -42,12 +46,13 @@ const PublicScreensNavigator = () => {
         component={BottomTabBar}
         options={{ headerShown: false }}
       />
-        <Public.Screen
+      <Public.Screen
         name="Post"
         component={PostScreen}
         options={{
           headerTitle: "",
           headerBackTitle: "Back",
+          headerRight: () => <HeaderRightMenuButton onPress={() => null} />,
         }}
       />
       <Public.Screen
@@ -59,7 +64,7 @@ const PublicScreensNavigator = () => {
           headerRight: () => <HeaderRightCompleteButton title="완료" />,
         }}
       />
-    
+
       <Public.Screen
         name="ChattingScreens"
         component={ChattingScreens}
