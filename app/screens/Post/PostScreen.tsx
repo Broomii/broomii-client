@@ -36,7 +36,7 @@ import { PublicStackParamList } from "../../navigation/Public/PublicScreensNavig
 
 type TabNavigationProp = BottomTabNavigationProp<BottomTabParamList, "Home">
 
-type NavigateToEditorProp = StackNavigationProp<PublicStackParamList, "Editor">
+type StackNavProp = StackNavigationProp<PublicStackParamList, "Post">
 
 type PostScreenProps = {
   route: RouteProp<{ params: { id: number } }, "params">
@@ -47,7 +47,7 @@ const PostScreen = ({ route }: PostScreenProps) => {
   const BOTTOM_INSET: number = useSafeAreaInsets().bottom
 
   const navigation = useNavigation<TabNavigationProp>()
-  const editorNavigation = useNavigation<NavigateToEditorProp>()
+  const stackNavigation = useNavigation<StackNavProp>()
 
   const dispatch = useAppDispatch()
   const {
@@ -83,12 +83,17 @@ const PostScreen = ({ route }: PostScreenProps) => {
   }
 
   const handleGoToChatting = () => {
-    navigation.navigate("Chatting")
+    if (flag) {
+      // If user is OP
+      navigation.navigate("Chatting") // Chatting Tab
+    } else {
+      stackNavigation.navigate("ChattingScreens") // ChatRoom
+    }
   }
 
   const handleEditPressed = () => {
     setPostActionOverlayVisible(false)
-    editorNavigation.navigate("Editor", { postToEdit: post })
+    stackNavigation.navigate("Editor", { postToEdit: post })
   }
 
   const handleDeletePressed = () => {
@@ -108,7 +113,6 @@ const PostScreen = ({ route }: PostScreenProps) => {
   const handleChangeStatusTo = (status: "pending" | "inProgress" | "done") => {
     if (status !== post.deliveryStatus) {
       return () => {
- 
         getJWT((jwt) =>
           dispatch(
             changeDeliveryStatus({
@@ -187,7 +191,7 @@ const PostScreen = ({ route }: PostScreenProps) => {
           <Text style={styles.tipAndLocationValue}>{deliveryPay}원</Text>
         </View>
         <Button
-          title="진행 중인 채팅 보기"
+          title="채팅 하기"
           variant="smallButton"
           onPress={handleGoToChatting}
         />

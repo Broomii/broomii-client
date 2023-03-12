@@ -15,6 +15,7 @@ type Props = {
   style?: ViewStyle
   variant?: "default" | "smallButton"
   isLoading?: boolean
+  disabled?: boolean
 }
 
 type buttonStylesType = {
@@ -34,6 +35,7 @@ const Button = ({
   style,
   variant = "default",
   isLoading = false,
+  disabled = false,
 }: Props) => {
   const buttonStyles: buttonStylesType = {
     default: {
@@ -54,6 +56,7 @@ const Button = ({
         pressed ? { opacity: 0.9 } : {},
       ]}
       onPress={onPress}
+      disabled={disabled}
     >
       {isLoading ? (
         <ActivityIndicator size={"small"} color="white" />

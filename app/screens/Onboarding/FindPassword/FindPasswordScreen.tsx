@@ -1,6 +1,7 @@
 import { View, Text, Pressable, Keyboard } from "react-native"
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { StackScreenProps } from "@react-navigation/stack"
+import axios from "axios"
 
 import {
   FormInputLabel,
@@ -19,17 +20,66 @@ import {
 } from "../../../utils/onboarding/checkForm"
 
 import { OnboardingParamList } from "../../../navigation/Onboarding/OnboardingScreensNavigator"
+import { AuthContext } from "../../../context/AuthContext"
+
+import { BASE_URL } from "../../../config"
+import { styleKit } from "../../../style"
 
 type Props = StackScreenProps<OnboardingParamList>
 
 const FindPasswordScreen = ({ navigation }: Props) => {
   const [email, setEmail] = useState("")
+  const [capturedEmail, setCapturedEmail] = useState("")
   const [emailError, setEmailError] = useState("")
   const [authCode, setAuthCode] = useState("")
   const [authCodeError, setAuthCodeError] = useState("")
+  // const [checkingAuthCode, setCheckingAuthCode] = useState(false)
 
   const [didSubmitAuthCode, setDidSubmitAuthCode] = useState(false)
   const [authCodeCorrect, setAuthCodeCorrect] = useState(false)
+
+  const handleSendAuthCodePressed = () => {
+    axios
+      .post(`${BASE_URL}/mail/sendCertificationNumber`, {
+        email,
+      })
+      .then((res) => {
+        const message = res.data.message
+        console.log(message)
+        setEmailError("이메일로 인증번호를 전송하였습니다")
+        setCapturedEmail(email)
+      })
+      .catch((e) => {
+        console.log(`Error: Checking Email at server failed, Reason: ${e}`)
+      })
+  }
+
+  const handleAuthCodeConfirmPressed = () => {
+    console.log(authCode)
+
+    if (capturedEmail.trim() === "") {
+      setEmailError("다시 이메일로 인증번호를 전송하세요")
+      return
+    }
+
+    axios
+      .post(`${BASE_URL}/members/confirmCertification`, {
+        email: capturedEmail,
+        certification: authCode,
+      })
+      .then((res) => {
+        console.log(res.data)
+        setAuthCodeCorrect(true)
+        setAuthCodeError("인증번호 확인을 완료하였습니다")
+      })
+      .catch((e) => {
+        console.log(`Error Sending Auth Code - Reason: ${e}`)
+        setAuthCodeError("인증번호 확인에 실패하였습니다")
+      })
+      .finally(() => {
+        setDidSubmitAuthCode(true)
+      })
+  }
 
   const handleGoToChangePasswordPressed = (): void => {
     let isEmailCorrect: boolean = false
@@ -56,7 +106,9 @@ const FindPasswordScreen = ({ navigation }: Props) => {
       )
 
     // if (fetched api returns true && isCorrect && )
-    navigation.navigate("ChangePassword")
+    if (isEmailCorrect && isAuthCodeCorrect) {
+      navigation.navigate("ChangePassword", { email })
+    }
   }
 
   return (
@@ -79,11 +131,19 @@ const FindPasswordScreen = ({ navigation }: Props) => {
           />
           <Button
             title="인증번호 전송"
-            onPress={() => null}
+            onPress={handleSendAuthCodePressed}
             variant="smallButton"
           />
         </View>
-        <FormInputError>{emailError}</FormInputError>
+        <FormInputError
+          style={
+            emailError === "이메일로 인증번호를 전송하였습니다"
+              ? { color: styleKit.colors.primary }
+              : {}
+          }
+        >
+          {emailError}
+        </FormInputError>
       </View>
       <View style={styles.findPasswordInputFormContainer}>
         <FormInputLabel>인증번호</FormInputLabel>
@@ -99,16 +159,29 @@ const FindPasswordScreen = ({ navigation }: Props) => {
           />
           <Button
             title="인증번호 확인"
-            onPress={() => null}
+            onPress={handleAuthCodeConfirmPressed}
             variant="smallButton"
           />
         </View>
-        <FormInputError>{authCodeError}</FormInputError>
+        <FormInputError
+          style={
+            authCodeError === "인증번호 확인을 완료하였습니다"
+              ? { color: styleKit.colors.primary }
+              : {}
+          }
+        >
+          {authCodeError}
+        </FormInputError>
       </View>
       <Button
         title="비밀번호 변경하러 가기"
         onPress={handleGoToChangePasswordPressed}
-        style={styles.changePasswordButton}
+        style={
+          authCodeCorrect
+            ? styles.changePasswordButtonEnabled
+            : styles.changePasswordButtonDisabled
+        }
+        disabled={!authCodeCorrect}
       />
     </Pressable>
   )

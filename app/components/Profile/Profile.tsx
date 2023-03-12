@@ -8,9 +8,10 @@ import styles from "./Profile.styles"
 
 type ProfileProps = {
   username: string | undefined
+  major?: string | null
 }
 
-const Profile = ({ username }: ProfileProps) => {
+const Profile = ({ username, major = null }: ProfileProps) => {
   return (
     <View
       style={[styleKit.layout.containerWithHorizontalFlex, styles.container]}
@@ -27,7 +28,7 @@ const Profile = ({ username }: ProfileProps) => {
         />
         <View>
           <Text style={styles.username}>{username}</Text>
-          {/* <Text style={styles.major}>컴퓨터 공학과</Text> */}
+          {major ? <Text style={styles.major}>{major}</Text> : null}
         </View>
       </View>
       <View>

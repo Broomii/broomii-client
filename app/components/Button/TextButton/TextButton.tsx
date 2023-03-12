@@ -15,7 +15,7 @@ const TextButton = ({ onPress, title, titleStyle, containerStyle }: Props) => {
       onPress={onPress}
       style={({ pressed }) => [containerStyle, pressed ? { opacity: 0.7 } : {}]}
     >
-      <Text style={styles.textButtonTitle}>{title}</Text>
+      <Text style={[styles.textButtonTitle, titleStyle]}>{title}</Text>
     </Pressable>
   )
 }

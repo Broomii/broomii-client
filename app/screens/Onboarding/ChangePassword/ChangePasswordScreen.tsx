@@ -1,6 +1,8 @@
 import { View, Text, Pressable, Keyboard } from "react-native"
 import { useState } from "react"
-import { StackScreenProps } from "@react-navigation/stack"
+import { StackNavigationProp } from "@react-navigation/stack"
+import { useNavigation, RouteProp } from "@react-navigation/native"
+import axios from "axios"
 
 import {
   FormInputLabel,
@@ -18,33 +20,67 @@ import {
 } from "../../../utils/onboarding/checkForm"
 
 import { OnboardingParamList } from "../../../navigation/Onboarding/OnboardingScreensNavigator"
+import { BASE_URL } from "../../../config"
 
-type Props = StackScreenProps<OnboardingParamList>
+type NavigationProps = StackNavigationProp<
+  OnboardingParamList,
+  "ChangePassword"
+>
 
-const ChangePasswordScreen = ({ navigation }: Props) => {
+type ChangePasswordProps = {
+  route: RouteProp<{ params: { email: string | null } }, "params">
+}
+
+const ChangePasswordScreen = ({ route }: ChangePasswordProps) => {
+  const navigation = useNavigation<NavigationProps>()
+
+  const { email } = route.params
+  console.log(email)
   const [password, setPassword] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [passwordConfirm, setPasswordConfirm] = useState("")
   const [passwordConfirmError, setPasswordConfirmError] = useState("")
+
+  const sendChangePasswordRequest = async () => {
+    let body
+
+    if (email === null) {
+      body = {
+        password,
+      }
+    } else {
+      body = {
+        email,
+        password,
+      }
+    }
+
+    return axios.post(`${BASE_URL}/members/editPassword`, body)
+  }
 
   const handleGoToLoginPressed = (): void => {
     let isPasswordCorrect: boolean = false
     let isPasswordConfirmCorrect: boolean = false
 
     // Check Password, Password Confirm
-    isPasswordCorrect = checkFormEmpty(
-      password,
-      setPasswordError,
-      "비밀번호를 입력하세요",
-    )
-    !checkFormEmpty(
-      passwordConfirm,
-      setPasswordConfirmError,
-      "비밀번호 확인을 입력하세요",
-    ) && checkPasswordSame(password, passwordConfirm, setPasswordConfirmError)
+    isPasswordCorrect =
+      !checkFormEmpty(password, setPasswordError, "비밀번호를 입력하세요") &&
+      !checkFormEmpty(
+        passwordConfirm,
+        setPasswordConfirmError,
+        "비밀번호 확인을 입력하세요",
+      ) &&
+      checkPasswordSame(password, passwordConfirm, setPasswordConfirmError)
 
     // if alright
-    navigation.navigate("Login")
+    if (isPasswordCorrect) {
+      sendChangePasswordRequest()
+        .then((res) => {
+          console.log(res.data)
+          navigation.navigate("Login")
+        })
+        .catch((e) => console.log(e))
+    }
   }
   return (
     <Pressable

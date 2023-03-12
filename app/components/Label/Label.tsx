@@ -5,8 +5,8 @@ import styles from "./Label.styles"
 
 type Props = {}
 
-const Label = ({ children }: TextProps) => {
-  return <Text style={styles.label}>{children}</Text>
+const Label = ({ children, style }: TextProps) => {
+  return <Text style={[styles.label, style]}>{children}</Text>
 }
 
 export default Label

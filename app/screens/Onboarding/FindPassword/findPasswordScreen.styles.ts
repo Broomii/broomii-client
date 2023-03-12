@@ -17,7 +17,11 @@ export default StyleSheet.create({
     width: "100%",
     marginVertical: 10,
   },
-  changePasswordButton: {
+  changePasswordButtonEnabled: {
     marginVertical: 15,
   },
+  changePasswordButtonDisabled: {
+    marginVertical: 15,
+    opacity: 0.5,
+  }
 })

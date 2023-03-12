@@ -19,7 +19,9 @@ export type OnboardingParamList = {
   Login: undefined
   SignUp: undefined
   FindPassword: undefined
-  ChangePassword: undefined
+  ChangePassword: {
+    email: string | null
+  }
 }
 
 const Stack = createStackNavigator<OnboardingParamList>()

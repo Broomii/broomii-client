@@ -26,6 +26,7 @@ export type PublicStackParamList = {
   Editor: { postToEdit: null | PostType }
   Post: { id: number }
   ChattingScreens: undefined
+  SettingsScreens: undefined
 }
 
 const Public = createStackNavigator<PublicStackParamList>()
@@ -71,6 +72,12 @@ const PublicScreensNavigator = () => {
         options={{ headerShown: false }}
       />
       {/* SettingsScreens */}
+
+      <Public.Screen
+        name="SettingsScreens"
+        component={SettingsScreens}
+        options={{ headerShown: false }}
+      />
     </Public.Navigator>
   )
 }

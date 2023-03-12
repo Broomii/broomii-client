@@ -77,7 +77,7 @@ const SignUpScreen = (props: Props) => {
   const [major, setMajor] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [phoneNumberError, setPhoneNumberError] = useState("")
-  const [male, setMale] = useState(false)
+  const [male, setMale] = useState(true)
   const [female, setFemale] = useState(false)
 
   const [didSubmitAuthCode, setDidSubmitAuthCode] = useState(false)
