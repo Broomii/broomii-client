@@ -18,6 +18,16 @@ import Card from "../../../components/Card"
 import { styleKit } from "../../../style"
 import { spacing } from "../../../constant/Layout"
 
+
+import {
+  Stomp,
+  StompConfig,
+  Client,
+  frameCallbackType,
+  CompatClient,
+} from "@stomp/stompjs"
+import { STOMP_URL } from "../../../config"
+
 type Props = {}
 
 const ChatroomScreen = (props: Props) => {
@@ -25,6 +35,41 @@ const ChatroomScreen = (props: Props) => {
   const [messages, setMessages] = useState([{}])
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
   const anim = useRef(new Animated.Value(isKeyboardVisible ? 20 : 45)).current
+
+  const stompClient = useRef<Client>()
+
+  const connect = () => {
+    const stompConfig: StompConfig = {
+      connectHeaders: {},
+      brokerURL: STOMP_URL,
+      debug: (str) => {
+        console.log(str)
+      },
+      reconnectDelay: 5000,
+      forceBinaryWSFrames: true,
+      appendMissingNULLonIncoming: true,
+      onConnect: () => {
+        console.log("connected")
+      },
+      onStompError: (frame) => {
+        console.log("Additional details: " + frame.body)
+      },
+    }
+  
+    stompClient.current = new Client(stompConfig)
+    stompClient.current.activate()
+  }
+
+  const disconnect = () => {
+    stompClient.current?.deactivate()
+  }
+
+  useEffect(() => {
+    connect()
+    return () => {
+      disconnect()
+    }
+  }, [])
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -159,7 +204,7 @@ const ChatroomScreen = (props: Props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Card stateButton={true} />
+      <Card title="Title" location="some lo" price={2000} stateButton={true}/>
       <GiftedChat
         messages={messages}
         onSend={(messages) => onSend(messages)}

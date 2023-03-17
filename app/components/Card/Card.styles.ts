@@ -67,11 +67,5 @@ export default StyleSheet.create<CardStyle | any>({
 
     padding: styleKit.spacing.xs,
     marginLeft: "auto",
-    width: 50,
-    height: 30,
-
-    borderColor: styleKit.colors.gray500,
-    borderWidth: 0.3,
-    borderRadius: 5,
   }
 })

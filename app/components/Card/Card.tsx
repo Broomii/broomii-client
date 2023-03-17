@@ -7,6 +7,7 @@ import Text from "../Text"
 import { styleKit } from "../../style"
 import styles from "./Card.styles"
 import { isAOS } from "../../utils/platform"
+import { StateButton } from "../Button"
 
 type Props = {
   title: string
@@ -41,9 +42,11 @@ const Card = ({
             </Text>
           </View>
         ) : stateButton ? (
-          <Pressable style={styles.stateButtonContainer}>
-            <Text>대기 중</Text>
-          </Pressable>
+          <StateButton
+            containerStyle={styles.stateButtonContainer}
+            status={variant}
+            onPress={() => null}
+          />
         ) : null}
       </View>
     </View>
