@@ -108,7 +108,11 @@ const EditInfoScreen = () => {
     )
 
     if (isUsernameCorrect && isNameCorrect && isAddressCorrect) {
-      getJWT((jwt) => updateMyInfo(jwt, name, username, address, major))
+      console.log("dd")
+      getJWT((jwt) => updateMyInfo(jwt, name, username, address, major)
+      .then(() => {
+        navigation.navigate("BottomTabBar")
+      }))
     }
   }
 

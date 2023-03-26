@@ -1,4 +1,4 @@
-import { View, Pressable, TouchableNativeFeedback } from "react-native"
+import { View, Pressable, TouchableNativeFeedback, ViewStyle } from "react-native"
 import React, { useState } from "react"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -16,6 +16,7 @@ type Props = {
   variant?: "pending" | "inProgress" | "done"
   stateButton?: boolean
   onPress?: () => void
+  containerStyle?: ViewStyle
 }
 
 const Card = ({
@@ -25,9 +26,10 @@ const Card = ({
   variant = "pending",
   onPress,
   stateButton = false,
+  containerStyle,
 }: Props) => {
   const child = (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Text style={styles.title(variant)}>{title}</Text>
       <View style={styleKit.layout.containerWithHorizontalFlex}>
         <Ionicons name="location-outline" style={styles.location(variant)} />

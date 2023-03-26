@@ -3,6 +3,7 @@ import axios from "axios"
 
 import { BASE_URL } from "../../config"
 import { transformDeliveryStatus } from "../../utils/converters"
+import { fetchSinglePost as fetchSinglePostService } from "../../services/postApi"
 
 export type PostType = {
   id?: number
@@ -19,34 +20,7 @@ export type PostType = {
 
 export const fetchSinglePost = createAsyncThunk(
   "singlePost/fetchSinglePost",
-  async ({ id, jwt }: { id: number; jwt: string }, { rejectWithValue }) => {
-    // console.log(id, jwt)
-    const result = axios
-      .get(`${BASE_URL}/orders/get/${id}`, {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      })
-      .then((res) => {
-        const data = res.data.data
-        const transformedDeliveryStatus = transformDeliveryStatus(
-          data.deliveryStatus,
-        )
-        const typedData: PostType = {
-          ...data,
-          deliveryStatus: transformedDeliveryStatus,
-          id,
-        }
-        // console.log(typedData)
-        return typedData
-      })
-      .catch((e) => {
-        console.log(e)
-        rejectWithValue({})
-      })
-
-    return result
-  },
+  fetchSinglePostService,
 )
 
 export const createSinglePost = createAsyncThunk(
@@ -54,7 +28,7 @@ export const createSinglePost = createAsyncThunk(
   async ({ jwt, post }: { jwt: string; post: PostType }, thunkApi) => {
     // console.log(post)
     // console.log(jwt)
-    const result = axios
+    const result = await axios
       .post(`${BASE_URL}/orders/create`, post, {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -76,7 +50,7 @@ export const createSinglePost = createAsyncThunk(
 export const fetchDefaultAddress = createAsyncThunk(
   "singlePost/fetchDefaultAddress",
   async (jwt: string, { rejectWithValue }) => {
-    const result = axios
+    const result = await axios
       .get(`${BASE_URL}/members/getDefaultAddress`, {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -98,7 +72,7 @@ export const fetchDefaultAddress = createAsyncThunk(
 export const deleteSinglePost = createAsyncThunk(
   "singlePost/deleteSinglePost",
   async ({ jwt, id }: { jwt: string; id: number }, { rejectWithValue }) => {
-    const result = axios
+    const result = await axios
       .delete(`${BASE_URL}/orders/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${jwt}`,
@@ -155,7 +129,7 @@ export const changeDeliveryStatus = createAsyncThunk(
     }: { jwt: string; id: number; status: "pending" | "inProgress" | "done" },
     thunkApi,
   ) => {
-    const result = axios
+    const result = await axios
       .put(
         `${BASE_URL}/orders/editDeliveryStatus`,
         {

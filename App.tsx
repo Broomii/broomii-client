@@ -4,6 +4,7 @@ import React from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { Provider } from "react-redux"
+import { TextEncoder, TextDecoder } from 'text-encoding';
 
 import Navigation from "./app/navigation"
 import {
@@ -18,6 +19,9 @@ import {
 
 import { store } from "./app/redux/store"
 import { AuthProvider } from "./app/context/AuthContext"
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 export default function App() {
   const [fontsLoaded] = useFonts({

@@ -1,11 +1,10 @@
 {
   "name": "sbr",
   "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "dev-build": "eas build --profile development-simulator --platform ios --local"
   },
@@ -23,6 +22,7 @@
     "@stomp/stompjs": "^7.0.0",
     "@types/sockjs-client": "^1.5.1",
     "@types/stompjs": "^2.3.5",
+    "@types/uuid": "^9.0.1",
     "axios": "^1.3.2",
     "eslint-config-universe": "^11.1.1",
     "expo": "~47.0.12",
@@ -30,6 +30,7 @@
     "expo-dev-client": "~2.0.1",
     "expo-font": "~11.0.1",
     "expo-secure-store": "~12.0.0",
+    "expo-splash-screen": "~0.17.5",
     "expo-status-bar": "~1.4.2",
     "expo-updates": "~0.15.6",
     "react": "18.1.0",
@@ -43,14 +44,17 @@
     "react-native-screens": "~3.18.0",
     "react-native-svg": "13.4.0",
     "react-native-tab-view": "^3.3.4",
+    "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.18.9",
     "react-redux": "^8.0.5",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.70.6",
+    "@types/text-encoding": "^0.0.36",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "eslint": "^8.31.0",

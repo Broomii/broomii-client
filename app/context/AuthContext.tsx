@@ -11,6 +11,7 @@ import axios from "axios"
 import * as SecureStore from "expo-secure-store"
 
 import { BASE_URL } from "../config"
+import { getToken } from "../utils/secureStore/secureStore"
 
 type LoginResponseDataType = {
   accessToken: string
@@ -197,18 +198,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }
 
-  const getTokenFromLocalStorage = async () => {
-    // printTokenFromSecureStore()
+  // const getTokenFromLocalStorage = async () => {
+  //   // printTokenFromSecureStore()
 
-    try {
-      setIsLoading(true)
-      const token = await SecureStore.getItemAsync("userToken")
-      setUserToken(token)
-      setIsLoading(false)
-    } catch (e) {
-      console.log(`is loggedin error: ${e}`)
-    }
-  }
+  //   try {
+  //     setIsLoading(true)
+  //     const token = await SecureStore.getItemAsync("userToken")
+  //     setUserToken(token)
+  //     setIsLoading(false)
+  //   } catch (e) {
+  //     console.log(`is loggedin error: ${e}`)
+  //   }
+  // }
 
   const handleSignUp = (
     password: string,
@@ -249,7 +250,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   useEffect(() => {
-    getTokenFromLocalStorage()
+    getToken().then((tok) => {
+      if (tok) {
+        setUserToken(tok)
+        console.log(tok)
+      }
+    })
   }, [])
 
   return (

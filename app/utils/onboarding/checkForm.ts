@@ -1,7 +1,7 @@
 import { SetStateAction, Dispatch } from "react"
 
 export const checkFormEmpty = (
-  input: string,
+  input: string = "",
   setErrorMessage: Dispatch<SetStateAction<string>>,
   errorMessage: string,
 ): boolean => {

@@ -16,8 +16,6 @@ export type GigCellType = {
   // requirement: string
 }
 
-
-
 export const fetchGigList = createAsyncThunk(
   "rider/fetchGigList",
   async (jwt: string, thunkApi) => {
@@ -45,7 +43,7 @@ export const fetchGigList = createAsyncThunk(
           }
           return newGig
         }) // map
-        
+
         return newData
       })
       .catch((e) => {

@@ -1,4 +1,4 @@
-import { View, ScrollView, Animated } from "react-native"
+import { View, ScrollView, Animated, Alert } from "react-native"
 import React, { useEffect, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { RouteProp, useNavigation } from "@react-navigation/native"
@@ -87,7 +87,7 @@ const PostScreen = ({ route }: PostScreenProps) => {
       // If user is OP
       navigation.navigate("Chatting") // Chatting Tab
     } else {
-      stackNavigation.navigate("ChattingScreens") // ChatRoom
+      stackNavigation.navigate("ChattingScreens", { postId: id }) // ChatRoom
     }
   }
 
@@ -107,6 +107,15 @@ const PostScreen = ({ route }: PostScreenProps) => {
             navigation.navigate("Home")
           }
         }),
+    )
+  }
+
+  const handleReport = () => {
+    setPostActionOverlayVisible(false)
+    Alert.alert(
+      "신고가 접수되었습니다",
+      "게시글 검토 후 적절한 조치가 취해집니다",
+      [{ text: "확인", onPress: () => null }],
     )
   }
 
@@ -134,15 +143,13 @@ const PostScreen = ({ route }: PostScreenProps) => {
   }, [id])
 
   useEffect(() => {
-    if (flag) {
-      navigation.setOptions({
-        headerRight: () => (
-          <HeaderRightMenuButton onPress={togglePostActionOverlay} />
-        ),
-      })
-    } else {
-    }
-  }, [postActionOverlayVisible, flag])
+    // console.log(flag)
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRightMenuButton onPress={togglePostActionOverlay} />
+      ),
+    })
+  }, [postActionOverlayVisible])
 
   return (
     <>
@@ -195,14 +202,22 @@ const PostScreen = ({ route }: PostScreenProps) => {
           variant="smallButton"
           onPress={handleGoToChatting}
         />
-        <OverlayMenu
-          menuList={[
-            { menuName: "수정하기", menuAction: handleEditPressed },
-            { menuName: "삭제하기", menuAction: handleDeletePressed },
-          ]}
-          onBackDropPress={togglePostActionOverlay}
-          isVisible={postActionOverlayVisible}
-        />
+        {flag ? (
+          <OverlayMenu
+            menuList={[
+              { menuName: "수정하기", menuAction: handleEditPressed },
+              { menuName: "삭제하기", menuAction: handleDeletePressed },
+            ]}
+            onBackDropPress={togglePostActionOverlay}
+            isVisible={postActionOverlayVisible}
+          />
+        ) : (
+          <OverlayMenu
+            menuList={[{ menuName: "신고하기", menuAction: handleReport }]}
+            onBackDropPress={togglePostActionOverlay}
+            isVisible={postActionOverlayVisible}
+          />
+        )}
         <OverlayMenu
           menuList={[
             {

@@ -8,8 +8,16 @@ import {
   Send,
   InputToolbar,
   Composer,
+  IMessage,
+  ComposerProps,
+  SendProps,
+  BubbleProps,
+  InputToolbarProps,
+  Avatar,
 } from "react-native-gifted-chat"
 import { Ionicons, FontAwesome } from "@expo/vector-icons"
+import { RouteProp } from "@react-navigation/native"
+import { StackNavigationProp } from "@react-navigation/stack"
 
 import { isAOS } from "../../../utils/platform"
 import { Button } from "../../../components/Button"
@@ -18,57 +26,116 @@ import Card from "../../../components/Card"
 import { styleKit } from "../../../style"
 import { spacing } from "../../../constant/Layout"
 
+import { ChattingStackParamList } from "../../../navigation/Public/ChattingScreens/ChattingScreens"
 
+import { SOCKET_URL } from "../../../config"
+
+import { renderBubble, renderSend, renderComposer } from "./components/ChatUI"
+import { getToken } from "../../../utils/secureStore/secureStore"
 import {
-  Stomp,
-  StompConfig,
-  Client,
-  frameCallbackType,
-  CompatClient,
-} from "@stomp/stompjs"
-import { STOMP_URL } from "../../../config"
+  fetchChatroomId,
+  fetchChattingHistory,
+  connect,
+  disconnect,
+  sendMessage,
+} from "../../../services/chatApi"
+import { fetchMyProfile } from "../../../services/settingsApi"
+import { fetchSinglePost } from "../../../services/postApi"
+import { PostType } from "../../../redux/Post/postSlice"
 
-type Props = {}
+type ChatroomScreenRouteProp = RouteProp<ChattingStackParamList, "Chatroom">
+type ChattingScreensNavigationProp = StackNavigationProp<
+  ChattingStackParamList,
+  "Chatroom"
+>
 
-const ChatroomScreen = (props: Props) => {
+type ChatroomScreenProps = {
+  route: ChatroomScreenRouteProp
+  navigation: ChattingScreensNavigationProp
+}
+
+const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const BOTTOM_INSET = useSafeAreaInsets().bottom
-  const [messages, setMessages] = useState([{}])
+  const [messages, setMessages] = useState<IMessage[]>([])
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+  const [chatroomId, setChatroomId] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [token, setToken] = useState("")
+  const [myUsername, setMyUsername] = useState("")
   const anim = useRef(new Animated.Value(isKeyboardVisible ? 20 : 45)).current
+  const { params } = route
+  const { postId } = params
+  const [post, setPost] = useState<PostType | null>(null)
 
-  const stompClient = useRef<Client>()
-
-  const connect = () => {
-    const stompConfig: StompConfig = {
-      connectHeaders: {},
-      brokerURL: STOMP_URL,
-      debug: (str) => {
-        console.log(str)
-      },
-      reconnectDelay: 5000,
-      forceBinaryWSFrames: true,
-      appendMissingNULLonIncoming: true,
-      onConnect: () => {
-        console.log("connected")
-      },
-      onStompError: (frame) => {
-        console.log("Additional details: " + frame.body)
-      },
-    }
-  
-    stompClient.current = new Client(stompConfig)
-    stompClient.current.activate()
+  const ws = useRef<WebSocket | null>(null)
+  const scrollRef = useRef<GiftedChat>(null)
+  const startNewChat = () => {
+    // createChatRoom
+    // send message
   }
 
-  const disconnect = () => {
-    stompClient.current?.deactivate()
+  const loadChatHistory = (roomId: number) => {
+    fetchChattingHistory(roomId, token).then((history) => {
+      if (!history) return
+      setMessages(history)
+    })
   }
 
   useEffect(() => {
-    connect()
-    return () => {
-      disconnect()
+    navigation.setOptions({ title: post?.nickName })
+  }, [post])
+
+  useEffect(() => {
+    getToken().then((tok) => {
+      if (tok) {
+        fetchSinglePost({ id: postId, jwt: tok }).then((_post) => {
+          setPost(_post)
+        })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollRef.current?.scrollToBottom(true)
+    }, 1000)
+  }, [messages])
+
+  useEffect(() => {
+    if (chatroomId) {
+      connect(ws, chatroomId, setMessages)
+      return () => {
+        disconnect(ws)
+      }
     }
+  }, [chatroomId])
+
+  useEffect(() => {
+    setIsLoading(true)
+    getToken()
+      .then((jwt) => {
+        if (jwt) {
+          setToken(jwt)
+          fetchChatroomId(postId, jwt as string).then((roomId) => {
+            if (!roomId) {
+              console.log("not room!!")
+              setChatroomId(null)
+            } else {
+              console.log("roomid o: " + roomId)
+              setChatroomId(roomId)
+              fetchMyProfile(jwt).then((data) => {
+                if (data) {
+                  setMyUsername(data.nickName)
+                  loadChatHistory(roomId)
+                }
+              })
+            }
+          })
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }, [])
 
   useEffect(() => {
@@ -100,68 +167,18 @@ const ChatroomScreen = (props: Props) => {
     }).start()
   }, [isKeyboardVisible, anim])
 
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-        },
-      },
-    ])
-  }, [])
+  const onSend = useCallback(
+    (messages: IMessage[] = []) => {
+      if (chatroomId) {
+        sendMessage(ws, messages[0].text, chatroomId, "TALK")
+      }
+    },
+    [chatroomId],
+  )
 
-  const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages),
-    )
-  }, [])
-
-  const renderBubble = (props) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: styleKit.colors.brand,
-          },
-        }}
-      />
-    )
-  }
-
-  const renderSend = (sendProps) => {
-    return (
-      <Send
-        {...sendProps}
-        textStyle={{
-          color: styleKit.colors.primaryInvert,
-          lineHeight: isAOS ? 42 : 37,
-          fontFamily: styleKit.font.FontWeight.Bold,
-          marginLeft: isAOS ? 9 : 10,
-        }}
-        containerStyle={{
-          backgroundColor: styleKit.colors.brand,
-          borderRadius: 18,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          width: 37,
-          height: 37,
-          marginRight: styleKit.spacing.sm,
-          marginBottom: 2,
-        }}
-        label={"↑"}
-      />
-    )
-  }
-
-  const renderInputToolbar = (inputToolbarProps) => {
+  const renderInputToolbar = (
+    inputToolbarProps: InputToolbarProps<IMessage>,
+  ) => {
     return (
       <InputToolbar
         {...inputToolbarProps}
@@ -176,17 +193,6 @@ const ChatroomScreen = (props: Props) => {
       />
     )
   }
-
-  const renderComposer = (composerProps) => {
-    return (
-      <Composer
-        {...composerProps}
-        placeholder="메시지를 입력하세요..."
-        textInputStyle={{ lineHeight: 22 }}
-      />
-    )
-  }
-
   const renderChatFooter = () => {
     return (
       <Animated.View
@@ -204,12 +210,17 @@ const ChatroomScreen = (props: Props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Card title="Title" location="some lo" price={2000} stateButton={true}/>
+      <Card
+        title={post ? post.title : ""}
+        location={post ? post.deliveryAddress : ""}
+        price={post ? post.deliveryPay : 0}
+        stateButton={post ? post.flag === 1 : false}
+      />
       <GiftedChat
         messages={messages}
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: 1,
+          _id: myUsername,
         }}
         renderBubble={renderBubble}
         renderSend={renderSend}
@@ -217,6 +228,12 @@ const ChatroomScreen = (props: Props) => {
         renderComposer={renderComposer}
         wrapInSafeArea={false}
         renderChatFooter={renderChatFooter}
+        inverted={false}
+        messagesContainerStyle={{ paddingTop: styleKit.spacing.md }}
+        renderAvatar={null}
+        showUserAvatar={false}
+        showAvatarForEveryMessage={false}
+        ref={scrollRef}
       />
       {isAOS ? null : <View style={{ marginBottom: styleKit.spacing.sm }} />}
     </View>

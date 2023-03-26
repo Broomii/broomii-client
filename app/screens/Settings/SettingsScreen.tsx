@@ -1,6 +1,6 @@
 import { View, Text } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useIsFocused } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 
 import { TextButton } from "../../components/Button"
@@ -24,6 +24,7 @@ type SettingsScreenNavigationProp = StackNavigationProp<
 >
 
 const SettingsScreen = (props: Props) => {
+  const isFocused = useIsFocused()
   const { handleLogout } = useContext(AuthContext)
   const navigation = useNavigation<SettingsScreenNavigationProp>()
 
@@ -35,18 +36,20 @@ const SettingsScreen = (props: Props) => {
   }
 
   useEffect(() => {
-    getJWT((jwt) =>
-      fetchMyProfile(jwt).then((res) => {
-        const { nickName, department } = res as {
-          nickName: string
-          department: string
-        }
+    if (isFocused) {
+      getJWT((jwt) =>
+        fetchMyProfile(jwt).then((res) => {
+          const { nickName, department } = res as {
+            nickName: string
+            department: string
+          }
 
-        setUsername(nickName)
-        setMajor(department)
-      }),
-    )
-  }, [])
+          setUsername(nickName)
+          setMajor(department)
+        }),
+      )
+    }
+  }, [isFocused])
 
   return (
     <View style={styleKit.layout.containerWithPadding}>

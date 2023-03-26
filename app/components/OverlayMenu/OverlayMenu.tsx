@@ -34,18 +34,26 @@ const OverlayMenu = ({
       <Pressable style={styles.menuContainer} onPress={menuList[0].menuAction}>
         <Text style={styles.menuText}>{menuList[0].menuName}</Text>
       </Pressable>
-      <Pressable style={styles.menuContainer} onPress={menuList[1].menuAction}>
-        <Text
-          style={[
-            styles.menuText,
-            menuList[1].menuName === "삭제하기"
-              ? { color: styleKit.colors.error }
-              : {},
-          ]}
+      {menuList.length >= 2 ? (
+        <Pressable
+          style={styles.menuContainer}
+          onPress={menuList[1].menuAction}
         >
-          {menuList[1].menuName}
-        </Text>
-      </Pressable>
+          <Text
+            style={[
+              styles.menuText,
+              menuList[1].menuName === "삭제하기"
+                ? { color: styleKit.colors.error }
+                : {},
+            ]}
+          >
+            {menuList[1].menuName}
+          </Text>
+        </Pressable>
+      ) : (
+        <></>
+      )}
+
       <Pressable
         style={[styles.menuContainer, { flex: menuList.length <= 2 ? 0 : 1 }]}
         onPress={menuList.length <= 2 ? () => null : menuList[2].menuAction}
