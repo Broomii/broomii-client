@@ -82,9 +82,7 @@ export const fetchChattingHistory = (roomId: number, jwt: string) => {
     })
 }
 
-const createOnOpen = (
-  setMessages: Dispatch<SetStateAction<IMessage[]>>,
-) => {
+const createOnMessage = (setMessages: Dispatch<SetStateAction<IMessage[]>>) => {
   return (ev: MessageEvent) => {
     console.log("onmesseag!!!!")
     const parsed: {
@@ -101,7 +99,7 @@ const createOnOpen = (
         _id: 1, //
       },
     }
-    if (parsed.type === "ENTER") return
+    if (parsed.type === "ENTER" && parsed.message === "") return
     setMessages((previousMessages) => [...previousMessages, newMessage])
     console.log(parsed)
   }
@@ -111,16 +109,16 @@ export const connect = (
   ws: MutableRefObject<WebSocket | null>,
   roomId: number,
   messagesSetter: Dispatch<SetStateAction<IMessage[]>>,
-
+  joiningMessage: string = "",
 ) => {
-  const onOpen = createOnOpen(messagesSetter)
+  const onMessage = createOnMessage(messagesSetter)
 
   ws.current = new WebSocket(SOCKET_URL)
   ws.current.onopen = () => {
     console.log("onOpen!!")
-    sendMessage(ws, "", roomId, "ENTER")
+    sendMessage(ws, joiningMessage, roomId, "ENTER")
   }
-  ws.current.onmessage = onOpen
+  ws.current.onmessage = onMessage
   ws.current.onerror = (ev: Event) => {
     console.log("ws error: " + ev)
   }

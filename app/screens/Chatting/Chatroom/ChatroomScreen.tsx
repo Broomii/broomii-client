@@ -38,6 +38,7 @@ import {
   connect,
   disconnect,
   sendMessage,
+  createChatroom,
 } from "../../../services/chatApi"
 import { fetchMyProfile } from "../../../services/settingsApi"
 import { fetchSinglePost } from "../../../services/postApi"
@@ -66,13 +67,34 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const { params } = route
   const { postId } = params
   const [post, setPost] = useState<PostType | null>(null)
+  const [joiningMessage, setJoiningMessage] = useState("")
 
   const ws = useRef<WebSocket | null>(null)
   const scrollRef = useRef<GiftedChat>(null)
-  const startNewChat = () => {
+  const chatroomIdRef = useRef<number | null>(null)
+
+
+  const startNewChat = (msg: string) => {
     // createChatRoom
+    getToken().then((tok) => {
+      if (tok) {
+        createChatroom(postId, tok).then((_chatroomId) => {
+          if (_chatroomId) {
+            setJoiningMessage(msg)
+            chatroomIdRef.current = _chatroomId
+          }
+        })
+      }
+    })
     // send message
   }
+
+  useEffect(() => {
+    if (joiningMessage !== "") {
+      setChatroomId(chatroomIdRef.current)
+    }
+  }, [joiningMessage])
+
 
   const loadChatHistory = (roomId: number) => {
     fetchChattingHistory(roomId, token).then((history) => {
@@ -103,7 +125,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
 
   useEffect(() => {
     if (chatroomId) {
-      connect(ws, chatroomId, setMessages)
+      connect(ws, chatroomId, setMessages, joiningMessage)
       return () => {
         disconnect(ws)
       }
@@ -118,7 +140,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
           setToken(jwt)
           fetchChatroomId(postId, jwt as string).then((roomId) => {
             if (!roomId) {
-              console.log("not room!!")
+              console.log("no room!!")
               setChatroomId(null)
             } else {
               console.log("roomid o: " + roomId)
@@ -171,6 +193,9 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
     (messages: IMessage[] = []) => {
       if (chatroomId) {
         sendMessage(ws, messages[0].text, chatroomId, "TALK")
+      } else {
+        // Start Chat
+        startNewChat(messages[0].text)
       }
     },
     [chatroomId],
