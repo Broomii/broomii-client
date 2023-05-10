@@ -1,6 +1,6 @@
 import { View, Text, Keyboard, Animated, Easing } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import React, { useState, useCallback, useEffect, useRef } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   GiftedChat,
@@ -146,8 +146,11 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
       setMyUsername(_myUsername)
 
       if (postId) {
+        console.log("postId: " + postId)
+        
         // No Chatroom Id, But Post Id exists
         const roomId = await fetchChatroomIdAsync(postId, jwt)
+        console.log("roomId: " + roomId)
         if (!roomId) {
           setChatroomId(null)
           return
@@ -276,7 +279,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
         renderAvatar={null}
         showUserAvatar={false}
         showAvatarForEveryMessage={false}
-        ref={scrollRef}
+        // ref={scrollRef}
       />
       {isAOS ? null : <View style={{ marginBottom: styleKit.spacing.sm }} />}
     </View>

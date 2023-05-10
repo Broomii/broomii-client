@@ -55,6 +55,8 @@ export const fetchChatroomIdAsync = async (postId: number, jwt: string) => {
     )
     const data = res.data.data
     const id: number | null = data.id
+    console.log("-------")
+    console.log(data)
     return id
   } catch (e) {
     console.log("Error fetching chatroom id with post id")
