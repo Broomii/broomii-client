@@ -43,9 +43,9 @@ const RiderScreen = (props: Props) => {
     dispatch(filterGigs(isEnabled))
     setIsEnabled((previousState: boolean) => !previousState)
   }
-
+  
   useEffect(() => {
-    console.log("rider screen hit")
+    // console.log("rider screen hit")
     if (gigListStatus === "idle" || shouldRefetch) {
       getJWT((jwt) => dispatch(fetchGigList(jwt)))
     }

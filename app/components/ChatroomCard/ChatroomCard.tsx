@@ -8,10 +8,11 @@ import { styleKit } from "../../style"
 import styles from "./ChatroomCard.styles"
 
 type Props = {
-  onPress?: () => null
+  onPress?: () => void
+  sender: string
 }
 
-const ChatroomCard = ({ onPress }: Props) => {
+const ChatroomCard = ({ onPress, sender }: Props) => {
   const child = (
     <View
       style={[styleKit.layout.containerWithHorizontalFlex, styles.container]}
@@ -27,10 +28,10 @@ const ChatroomCard = ({ onPress }: Props) => {
             styles.usernameAndTimePastContainer,
           ]}
         >
-          <Text style={styles.username}>멍충멍충</Text>
-          <Text style={styles.timePast}>6분 전</Text>
+          <Text style={styles.username}>{sender}</Text>
+          {/* <Text style={styles.timePast}>6분 전</Text> */}
         </View>
-        <Text style={styles.lastChat}>지금 나와있어여</Text>
+        {/* <Text style={styles.lastChat}>지금 나와있어여</Text> */}
       </View>
     </View>
   )

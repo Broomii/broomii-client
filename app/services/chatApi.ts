@@ -5,6 +5,26 @@ import uuid from "react-native-uuid"
 import { getToken } from "../utils/secureStore/secureStore"
 import { BASE_URL, SOCKET_URL } from "../config"
 
+export const fetchChatroomList = async (jwt: string) => {
+  try {
+    const res = await axios.get(`${BASE_URL}/chat/getChattingList`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
+
+    const data = res.data.data
+    const roomList: {
+      receiver: string
+      orderId: number
+    }[] = data.chattingRoomDtoList
+
+    return roomList
+  } catch (e) {
+    console.log("Error fetching chatroom list: " + e)
+  }
+}
+
 export const fetchChatroomId = (postId: number, jwt: string) => {
   return axios
     .get(`${BASE_URL}/chat/checkChattingRoom/${postId}`, {
@@ -21,6 +41,25 @@ export const fetchChatroomId = (postId: number, jwt: string) => {
       console.log("Error fetching chatroom id with post id")
       console.log(e)
     })
+}
+
+export const fetchChatroomIdAsync = async (postId: number, jwt: string) => {
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/chat/checkChattingRoom/${postId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      },
+    )
+    const data = res.data.data
+    const id: number | null = data.id
+    return id
+  } catch (e) {
+    console.log("Error fetching chatroom id with post id")
+    console.log(e)
+  }
 }
 
 export const createChatroom = (postId: number, jwt: string) => {
@@ -73,7 +112,7 @@ export const fetchChattingHistory = (roomId: number, jwt: string) => {
           },
         }),
       )
-      // console.log(history)
+
       return history
     })
     .catch((e) => {
@@ -84,11 +123,11 @@ export const fetchChattingHistory = (roomId: number, jwt: string) => {
 
 const createOnMessage = (setMessages: Dispatch<SetStateAction<IMessage[]>>) => {
   return (ev: MessageEvent) => {
-    console.log("onmesseag!!!!")
     const parsed: {
       message: string
       roomId: number
       type: "ENTER" | "TALK"
+      sender: string
     } = JSON.parse(ev.data)
     console.log("parsed!!!")
     const newMessage: IMessage = {
@@ -96,12 +135,15 @@ const createOnMessage = (setMessages: Dispatch<SetStateAction<IMessage[]>>) => {
       text: parsed.message,
       createdAt: new Date(),
       user: {
-        _id: 1, //
+        _id: parsed.sender, //
       },
     }
+
     if (parsed.type === "ENTER" && parsed.message === "") return
-    setMessages((previousMessages) => [...previousMessages, newMessage])
-    console.log(parsed)
+    setMessages((previousMessages) => {
+      console.log(previousMessages.length)
+      return [...previousMessages, newMessage]
+    })
   }
 }
 
@@ -110,13 +152,14 @@ export const connect = (
   roomId: number,
   messagesSetter: Dispatch<SetStateAction<IMessage[]>>,
   joiningMessage: string = "",
+  myUsername: string,
 ) => {
   const onMessage = createOnMessage(messagesSetter)
 
   ws.current = new WebSocket(SOCKET_URL)
   ws.current.onopen = () => {
     console.log("onOpen!!")
-    sendMessage(ws, joiningMessage, roomId, "ENTER")
+    sendMessage(ws, joiningMessage, roomId, "ENTER", myUsername)
   }
   ws.current.onmessage = onMessage
   ws.current.onerror = (ev: Event) => {
@@ -133,19 +176,18 @@ export const sendMessage = (
   body: string,
   roomId: number,
   action: "ENTER" | "TALK",
+  sender: string,
 ) => {
-  getToken().then((tok) => {
-    console.log(action)
-    console.log(roomId)
-    console.log(body)
-    console.log(tok)
-    const stringifiedMessage = JSON.stringify({
-      type: action,
-      roomId,
-      message: body,
-      token: tok,
-    })
-    console.log(stringifiedMessage)
-    ws.current?.send(stringifiedMessage)
+  // console.log(action)
+  // console.log(roomId)
+  // console.log(body)
+  // console.log(tok)
+  const stringifiedMessage = JSON.stringify({
+    type: action,
+    roomId,
+    message: body,
+    sender,
   })
+  // console.log(stringifiedMessage)
+  ws.current?.send(stringifiedMessage)
 }

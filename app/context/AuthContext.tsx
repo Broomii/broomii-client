@@ -87,9 +87,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       .then((res) => {
         const data: LoginResponseDataType = res.data.data
         const token = data.accessToken
-        console.log(token)
         setUserToken(token)
         if (token) {
+          
+          console.log(token)
           SecureStore.setItemAsync("userToken", token)
         } else {
           console.log("Error: There's NO Token in Response despite of success")

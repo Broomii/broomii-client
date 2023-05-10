@@ -31,16 +31,20 @@ import { ChattingStackParamList } from "../../../navigation/Public/ChattingScree
 import { SOCKET_URL } from "../../../config"
 
 import { renderBubble, renderSend, renderComposer } from "./components/ChatUI"
-import { getToken } from "../../../utils/secureStore/secureStore"
+import { getToken, getTokenAsync } from "../../../utils/secureStore/secureStore"
 import {
   fetchChatroomId,
+  fetchChatroomIdAsync,
   fetchChattingHistory,
   connect,
   disconnect,
   sendMessage,
   createChatroom,
 } from "../../../services/chatApi"
-import { fetchMyProfile } from "../../../services/settingsApi"
+import {
+  fetchMyProfile,
+  fetchMyProfileAsync,
+} from "../../../services/settingsApi"
 import { fetchSinglePost } from "../../../services/postApi"
 import { PostType } from "../../../redux/Post/postSlice"
 
@@ -62,7 +66,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const [chatroomId, setChatroomId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [token, setToken] = useState("")
-  const [myUsername, setMyUsername] = useState("")
+  const [myUsername, setMyUsername] = useState("") //
   const anim = useRef(new Animated.Value(isKeyboardVisible ? 20 : 45)).current
   const { params } = route
   const { postId } = params
@@ -73,21 +77,28 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const scrollRef = useRef<GiftedChat>(null)
   const chatroomIdRef = useRef<number | null>(null)
 
-
   const startNewChat = (msg: string) => {
     // createChatRoom
     getToken().then((tok) => {
       if (tok) {
         createChatroom(postId, tok).then((_chatroomId) => {
           if (_chatroomId) {
-            setJoiningMessage(msg)
             chatroomIdRef.current = _chatroomId
+            setJoiningMessage(msg)
           }
         })
       }
     })
-    // send message
   }
+
+  // const setupChatHistory = (jwt: string, roomId: number) => {
+  //   fetchMyProfile(jwt).then((data) => {
+  //     if (data) {
+  //       setMyUsername(data.nickName)
+  //       loadChatHistory(roomId)
+  //     }
+  //   })
+  // }
 
   useEffect(() => {
     if (joiningMessage !== "") {
@@ -95,9 +106,8 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
     }
   }, [joiningMessage])
 
-
-  const loadChatHistory = (roomId: number) => {
-    fetchChattingHistory(roomId, token).then((history) => {
+  const loadChatHistory = (roomId: number, jwt: string) => {
+    fetchChattingHistory(roomId, jwt).then((history) => {
       if (!history) return
       setMessages(history)
     })
@@ -124,40 +134,47 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   }, [messages])
 
   useEffect(() => {
-    if (chatroomId) {
-      connect(ws, chatroomId, setMessages, joiningMessage)
-      return () => {
-        disconnect(ws)
+    // if (chatroomId) {
+    const setupChatroom = async () => {
+      const jwt = await getTokenAsync()
+      if (!jwt) return
+      setToken(jwt)
+
+      const profileData = await fetchMyProfileAsync(jwt)
+      const _myUsername = profileData?.nickName
+      if (!_myUsername) return
+      setMyUsername(_myUsername)
+
+      if (postId) {
+        // No Chatroom Id, But Post Id exists
+        const roomId = await fetchChatroomIdAsync(postId, jwt)
+        if (!roomId) {
+          setChatroomId(null)
+          return
+        }
+        connect(ws, roomId, setMessages, joiningMessage, _myUsername)
+        // setupChatHistory(jwt, roomId)
+        loadChatHistory(roomId, jwt)
+      } else {
+        // Chatroom Id exists but No Post Id
+        // setupChatHistory(jwt, roomId)
       }
     }
+
+    setupChatroom()
+    return () => {
+      disconnect(ws)
+    }
+    // }
   }, [chatroomId])
 
   useEffect(() => {
-    setIsLoading(true)
-    getToken()
-      .then((jwt) => {
-        if (jwt) {
-          setToken(jwt)
-          fetchChatroomId(postId, jwt as string).then((roomId) => {
-            if (!roomId) {
-              console.log("no room!!")
-              setChatroomId(null)
-            } else {
-              console.log("roomid o: " + roomId)
-              setChatroomId(roomId)
-              fetchMyProfile(jwt).then((data) => {
-                if (data) {
-                  setMyUsername(data.nickName)
-                  loadChatHistory(roomId)
-                }
-              })
-            }
-          })
-        }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    // if passed chatroomid is null
+    // setIsLoading(true)
+    // setupChatroom()
+    // else (chatting passed o)
+    // setChatroomId(roomId)
+    // setupChatHistory(jwt, roomId)
   }, [])
 
   useEffect(() => {
@@ -192,13 +209,13 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const onSend = useCallback(
     (messages: IMessage[] = []) => {
       if (chatroomId) {
-        sendMessage(ws, messages[0].text, chatroomId, "TALK")
+        sendMessage(ws, messages[0].text, chatroomId, "TALK", myUsername)
       } else {
         // Start Chat
         startNewChat(messages[0].text)
       }
     },
-    [chatroomId],
+    [chatroomId, myUsername],
   )
 
   const renderInputToolbar = (
@@ -241,6 +258,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
         price={post ? post.deliveryPay : 0}
         stateButton={post ? post.flag === 1 : false}
       />
+
       <GiftedChat
         messages={messages}
         onSend={(messages) => onSend(messages)}

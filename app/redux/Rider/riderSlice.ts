@@ -98,7 +98,7 @@ export const riderSlice = createSlice({
         state.gigList = newGigs
         state.filteredGigList = state.gigList
         state.shouldRefetch = false
-        console.log("hit")
+        // console.log("hit")
       })
       .addCase(fetchGigList.rejected, (state, action) => {
         state.status = "failed"

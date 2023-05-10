@@ -18,3 +18,12 @@ export const getToken = async () => {
       console.log(e)
     })
 }
+
+export const getTokenAsync = async () => {
+  try {
+    const token = await SecureStore.getItemAsync("userToken")
+    return token
+  } catch (error) {
+    console.log(error)
+  }
+}

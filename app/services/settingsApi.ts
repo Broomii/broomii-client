@@ -17,6 +17,21 @@ export const fetchMyProfile = async (jwt: string) => {
     })
 }
 
+export const fetchMyProfileAsync = async (jwt: string) => {
+  try {
+    const res = await axios.get(`${BASE_URL}/mypage/get`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
+
+    const data: { nickName: string; department: string } = res.data.data
+    return data
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export const fetchMyInfo = async (jwt: string) => {
   return await axios
     .get(`${BASE_URL}/mypage/get`, {
