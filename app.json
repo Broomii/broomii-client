@@ -1,5 +1,6 @@
 {
   "expo": {
+    "sdkVersion": "48.0.0",
     "name": "sbr",
     "slug": "sbr",
     "version": "1.0.0",
@@ -25,6 +26,13 @@
       "eas": {
         "projectId": "9ea73c6e-ef64-4a79-a586-9cd3e8954f9b"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9ea73c6e-ef64-4a79-a586-9cd3e8954f9b"
+    },
+    "android": {}
   }
 }

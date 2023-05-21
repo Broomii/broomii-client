@@ -1,4 +1,4 @@
-import { View, Text, Keyboard, Animated, Easing } from "react-native"
+import { View, Text, Keyboard, Animated, Easing, Alert } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import { useState, useCallback, useEffect, useRef } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -69,7 +69,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const [myUsername, setMyUsername] = useState("") //
   const anim = useRef(new Animated.Value(isKeyboardVisible ? 20 : 45)).current
   const { params } = route
-  const { postId } = params
+  const { postId, chattingRoomId: passedChatroomId } = params
   const [post, setPost] = useState<PostType | null>(null)
   const [joiningMessage, setJoiningMessage] = useState("")
 
@@ -91,17 +91,9 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
     })
   }
 
-  // const setupChatHistory = (jwt: string, roomId: number) => {
-  //   fetchMyProfile(jwt).then((data) => {
-  //     if (data) {
-  //       setMyUsername(data.nickName)
-  //       loadChatHistory(roomId)
-  //     }
-  //   })
-  // }
-
   useEffect(() => {
     if (joiningMessage !== "") {
+      console.log("joining messaege: " + chatroomIdRef.current)
       setChatroomId(chatroomIdRef.current)
     }
   }, [joiningMessage])
@@ -109,6 +101,7 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
   const loadChatHistory = (roomId: number, jwt: string) => {
     fetchChattingHistory(roomId, jwt).then((history) => {
       if (!history) return
+
       setMessages(history)
     })
   }
@@ -145,30 +138,30 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
       if (!_myUsername) return
       setMyUsername(_myUsername)
 
-      if (postId) {
+      if (postId && !passedChatroomId) {
         console.log("postId: " + postId)
-        
+
         // No Chatroom Id, But Post Id exists
         const roomId = await fetchChatroomIdAsync(postId, jwt)
         console.log("roomId: " + roomId)
         if (!roomId) {
-          setChatroomId(null)
+          chatroomIdRef.current = null
           return
         }
+        chatroomIdRef.current = roomId
         connect(ws, roomId, setMessages, joiningMessage, _myUsername)
-        // setupChatHistory(jwt, roomId)
+
         loadChatHistory(roomId, jwt)
-      } else {
-        // Chatroom Id exists but No Post Id
-        // setupChatHistory(jwt, roomId)
+      } else if (postId && passedChatroomId) {
+        console.log(passedChatroomId)
+        chatroomIdRef.current = passedChatroomId
+
+        connect(ws, passedChatroomId, setMessages, joiningMessage, _myUsername)
+        loadChatHistory(passedChatroomId, jwt)
       }
     }
 
     setupChatroom()
-    return () => {
-      disconnect(ws)
-    }
-    // }
   }, [chatroomId])
 
   useEffect(() => {
@@ -178,6 +171,10 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
     // else (chatting passed o)
     // setChatroomId(roomId)
     // setupChatHistory(jwt, roomId)
+    return () => {
+      Alert.alert("소켓 종료")
+      disconnect(ws)
+    }
   }, [])
 
   useEffect(() => {
@@ -211,8 +208,14 @@ const ChatroomScreen = ({ route, navigation }: ChatroomScreenProps) => {
 
   const onSend = useCallback(
     (messages: IMessage[] = []) => {
-      if (chatroomId) {
-        sendMessage(ws, messages[0].text, chatroomId, "TALK", myUsername)
+      if (chatroomIdRef.current) {
+        sendMessage(
+          ws,
+          messages[0].text,
+          chatroomIdRef.current,
+          "TALK",
+          myUsername,
+        )
       } else {
         // Start Chat
         startNewChat(messages[0].text)

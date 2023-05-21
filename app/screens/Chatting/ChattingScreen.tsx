@@ -11,7 +11,7 @@ import { fetchChatroomList } from "../../services/chatApi"
 import styles from "./ChattingScreen.styles"
 type Prop = {}
 
-type ChattingScreenProp = StackNavigationProp<PublicStackParamList, "">
+type ChattingScreenProp = StackNavigationProp<PublicStackParamList, "ChattingScreens">
 
 const ChattingScreen = (props: Prop) => {
   const navigation = useNavigation<ChattingScreenProp>()
@@ -19,6 +19,7 @@ const ChattingScreen = (props: Prop) => {
     {
       receiver: string
       orderId: number
+      chattingRoomId: number
     }[]
   >([])
 
@@ -42,12 +43,13 @@ const ChattingScreen = (props: Prop) => {
     item: {
       receiver: string
       orderId: number
+      chattingRoomId: number
     }
   }) => {
     return (
       <ChatroomCard
         onPress={() =>
-          navigation.navigate("ChattingScreens", { postId: item.orderId })
+          navigation.navigate("ChattingScreens", { postId: item.orderId, chattingRoomId: item.chattingRoomId})
         }
         sender={item.receiver}
       />

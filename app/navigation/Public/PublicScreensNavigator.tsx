@@ -25,7 +25,7 @@ export type PublicStackParamList = {
   BottomTabBar: undefined
   Editor: { postToEdit: null | PostType }
   Post: { id: number }
-  ChattingScreens: { postId: number }
+  ChattingScreens: { postId: number; chattingRoomId: number | null }
   SettingsScreens: undefined
 }
 

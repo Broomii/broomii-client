@@ -16,7 +16,7 @@ const Chatting = createStackNavigator()
 type Props = {}
 
 export type ChattingStackParamList = {
-  Chatroom: { postId: number }
+  Chatroom: { postId: number, chattingRoomId: number | null }
 }
 
 type ChattingScreensRouteProp = RouteProp<
@@ -31,7 +31,7 @@ type ChattingScreensProps = {
 const ChattingScreens = ({ route }: ChattingScreensProps) => {
   const TOP_INSET = useSafeAreaInsets().top
   const params = route.params
-  const chatroomParam = { postId: params.postId }
+  const chatroomParam = { postId: params.postId, chattingRoomId: params.chattingRoomId }
   
   return (
     <Chatting.Navigator

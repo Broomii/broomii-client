@@ -87,7 +87,7 @@ const PostScreen = ({ route }: PostScreenProps) => {
       // If user is OP
       navigation.navigate("Chatting") // Chatting Tab
     } else {
-      stackNavigation.navigate("ChattingScreens", { postId: id }) // ChatRoom
+      stackNavigation.navigate("ChattingScreens", { postId: id, chattingRoomId: null }) // ChatRoom
     }
   }
 

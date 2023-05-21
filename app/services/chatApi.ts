@@ -2,6 +2,7 @@ import axios from "axios"
 import { MutableRefObject, Dispatch, SetStateAction } from "react"
 import { IMessage, GiftedChat } from "react-native-gifted-chat"
 import uuid from "react-native-uuid"
+import { Alert } from "react-native"
 import { getToken } from "../utils/secureStore/secureStore"
 import { BASE_URL, SOCKET_URL } from "../config"
 
@@ -17,6 +18,7 @@ export const fetchChatroomList = async (jwt: string) => {
     const roomList: {
       receiver: string
       orderId: number
+      chattingRoomId: number
     }[] = data.chattingRoomDtoList
 
     return roomList
@@ -44,6 +46,7 @@ export const fetchChatroomId = (postId: number, jwt: string) => {
 }
 
 export const fetchChatroomIdAsync = async (postId: number, jwt: string) => {
+  console.log(`input - postid:${postId}, jwt:${jwt}`)
   try {
     const res = await axios.get(
       `${BASE_URL}/chat/checkChattingRoom/${postId}`,
@@ -131,7 +134,7 @@ const createOnMessage = (setMessages: Dispatch<SetStateAction<IMessage[]>>) => {
       type: "ENTER" | "TALK"
       sender: string
     } = JSON.parse(ev.data)
-    console.log("parsed!!!")
+    // console.log("parsed!!!")
     const newMessage: IMessage = {
       _id: uuid.v4() as string,
       text: parsed.message,
@@ -142,8 +145,10 @@ const createOnMessage = (setMessages: Dispatch<SetStateAction<IMessage[]>>) => {
     }
 
     if (parsed.type === "ENTER" && parsed.message === "") return
+    console.log("ON MESSAGE: " + ev.data)
+    Alert.alert("ON MESSAGE: " + ev.data)
     setMessages((previousMessages) => {
-      console.log(previousMessages.length)
+      // console.log(previousMessages.length)
       return [...previousMessages, newMessage]
     })
   }
@@ -165,7 +170,7 @@ export const connect = (
   }
   ws.current.onmessage = onMessage
   ws.current.onerror = (ev: Event) => {
-    console.log("ws error: " + ev)
+    console.log("ws error: " + ev.code)
   }
 }
 export const disconnect = (ws: MutableRefObject<WebSocket | null>) => {
@@ -190,6 +195,8 @@ export const sendMessage = (
     message: body,
     sender,
   })
-  // console.log(stringifiedMessage)
+  console.log("SEND:  " + stringifiedMessage)
+  Alert.alert("SEND:  " + stringifiedMessage)
+  // console.log(ws.current)
   ws.current?.send(stringifiedMessage)
 }

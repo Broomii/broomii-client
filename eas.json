@@ -39,8 +39,9 @@
 // }
 {
   "build": {
-    "production": {
-      
+    "preview": {
+      "distribution": "internal"
     }
   }
 }
+
